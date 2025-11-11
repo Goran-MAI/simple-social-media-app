@@ -1,4 +1,4 @@
-name: Run Python Test (SSMA)
+name: Run Python Tests (SSMA)
 
 on:
   pull_request:
@@ -16,12 +16,16 @@ jobs:
           POSTGRES_USER: ssma_admin
           POSTGRES_PASSWORD: ssma_pass
           POSTGRES_DB: ssma_test
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd "pg_isready -U ssma_admin"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
     env:
+      # Hier ist der entscheidende Unterschied: Hostname = postgres (Name des Services)
       DATABASE_URL: postgresql+psycopg2://ssma_admin:ssma_pass@postgres:5432/ssma_test
 
     strategy:
@@ -43,5 +47,4 @@ jobs:
           pip install pytest sqlmodel psycopg2-binary
 
       - name: Run tests
-        run: |
-          pytest -v tests/
+        run: pytest -v tests/
