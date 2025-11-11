@@ -13,7 +13,7 @@ from backend.models.post import Post
 DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL is None:
     # lokal
-    DATABASE_URL = "postgresql+psycopg2://ssma_admin:ssma_2025@localhost:5432/ssma_db"
+    DATABASE_URL = "postgresql+psycopg2://ssma_admin:ssma_pass@localhost:5432/ssma_test"
 else:
     # CI-Umgebung (GitHub Actions)
     DATABASE_URL = DATABASE_URL
@@ -21,7 +21,7 @@ else:
 engine = create_engine(DATABASE_URL, echo=True)
 
 # Retry loop für GitHub Actions / CI (optional, schadet lokal nicht)
-for i in range(10):
+for i in range(30):
     try:
         with engine.connect():
             break
