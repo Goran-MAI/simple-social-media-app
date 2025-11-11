@@ -25,7 +25,6 @@ jobs:
           --health-retries 5
 
     env:
-      # Hier ist der entscheidende Unterschied: Hostname = postgres (Name des Services)
       DATABASE_URL: postgresql+psycopg2://ssma_admin:ssma_pass@postgres:5432/ssma_test
 
     strategy:
