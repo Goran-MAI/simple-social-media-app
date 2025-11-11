@@ -25,7 +25,7 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: postgresql+psycopg2://ssma_admin:ssma_pass@postgres:5432/ssma_test
+      DATABASE_URL: postgresql+psycopg2://ssma_admin:ssma_2025@postgres:5432/ssma_db
 
     strategy:
       matrix:

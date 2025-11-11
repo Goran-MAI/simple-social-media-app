@@ -5,15 +5,28 @@ import pytest
 from datetime import datetime, timedelta
 from sqlmodel import Session, select
 
-from backend.init_db import engine
+from backend.init_db import engine, init_db
 from backend.models.user import User
 from backend.models.post import Post
 from sqlalchemy import text
+import time
 
 
 @pytest.fixture(name="session")
 def session_fixture():
     """Open a new session for each test and roll back after the test."""
+
+    for _ in range(30):
+        try:
+            with engine.connect():
+                break
+        except Exception:
+            time.sleep(1)
+
+    # init table creation
+    init_db()
+
+
     with Session(engine) as session:
         yield session
         # Cleanup test data

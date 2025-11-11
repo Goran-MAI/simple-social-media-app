@@ -15,7 +15,7 @@ DATABASE_URL = os.getenv(
 # Create database engine
 engine = create_engine(DATABASE_URL, echo=True)  # echo=True zeigt SQL-Statements
 
-# Create all tables defined in SQLModel metadata
-SQLModel.metadata.create_all(engine)
-
-print("PostgreSQL database and tables created successfully!")
+def init_db():
+    # Create all tables defined in SQLModel metadata
+    SQLModel.metadata.create_all(engine)
+    print("PostgreSQL database and tables created successfully!")
