@@ -16,17 +16,6 @@ import time
 def session_fixture():
     """Open a new session for each test and roll back after the test."""
 
-    for _ in range(30):
-        try:
-            with engine.connect():
-                break
-        except Exception:
-            time.sleep(1)
-
-    # init table creation
-    init_db()
-
-
     with Session(engine) as session:
         yield session
         # Cleanup test data
