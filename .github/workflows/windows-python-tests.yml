@@ -45,5 +45,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest sqlmodel psycopg2-binary
 
+      - name: Wait for PostgreSQL
+        run: |
+          for i in {1..30}; do
+            pg_isready -h postgres -U ssma_admin -d ssma_test && break
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+
       - name: Run tests
         run: pytest -v tests/
