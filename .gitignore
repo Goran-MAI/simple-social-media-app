@@ -1,0 +1,61 @@
+# Byte-compiled / optimized / DLL files 
+__pycache__/ 
+*.py[cod] 
+*$py.class 
+ 
+# Virtual environments 
+.env 
+.venv/ 
+venv/ 
+ENV/ 
+env.bak/ 
+venv.bak/ 
+ 
+# Environment files (sensitive) 
+*.env 
+.env.local 
+.env.test 
+.env.prod 
+.env.development 
+ 
+# Logs 
+*.log 
+logs/ 
+ 
+# Unit test / coverage reports 
+.coverage 
+coverage.xml 
+*.cover 
+.pytest_cache/ 
+htmlcov/ 
+ 
+# local databases 
+*.db 
+ 
+
+# Distribution / packaging 
+build/ 
+dist/ 
+*.egg-info/ 
+.eggs/ 
+MANIFEST 
+ 
+# IDEs / Editor config 
+.idea/ 
+*.sublime-project 
+*.sublime-workspace 
+ 
+# OS-specific files 
+.DS_Store 
+Thumbs.db 
+Desktop.ini 
+ 
+# Backup / temporary files 
+*~ 
+*.bak 
+*.tmp 
+*.swp 
+*.swo 
+ 
+# Project-specific 
+pathlib_output.py 

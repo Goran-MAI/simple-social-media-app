@@ -1,4 +1,6 @@
 # tests/test_db.py
+# script execution: pytest tests/test_db.py -v
+
 import pytest
 from datetime import datetime, timedelta
 from sqlmodel import Session, select

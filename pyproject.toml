@@ -1,10 +1,15 @@
 [project]
 name = "ssma"
 version = "0.1.0"
-description = "Add your description here"
+description = "SSMA is a Python project that demonstrates a simple full-stack setup with **SQLModel**, **PostgreSQL**, and a structured backend and frontend. The project supports adding users and posts, and includes automated tests for database functionality."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "psycopg2-binary>=2.9.11",
     "sqlmodel>=0.0.27",
 ]
+[tool.pytest.ini_options]
+pythonpath = "."
+testpaths = ["tests"]
+python_files = "test_*.py"
+addopts = "-v --maxfail=3"
