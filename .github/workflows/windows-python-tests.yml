@@ -43,8 +43,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          sudo apt-get -yqq install libpq-dev
-          sudo systemctl start postgresql.service
           pip install pytest sqlmodel psycopg2-binary
 
       - name: Wait for PostgreSQL
