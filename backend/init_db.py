@@ -3,8 +3,8 @@ import os
 import time
 from sqlalchemy.exc import OperationalError
 from sqlmodel import SQLModel, create_engine
-from backend.models.user import User
-from backend.models.post import Post
+from backend.models.user import User # do not delete this line!!!
+from backend.models.post import Post # do not delete this line!!!
 
 # PostgreSQL connection URL
 default_url = "postgresql+psycopg2://ssma_admin:ssma_2025@localhost/ssma_db"
