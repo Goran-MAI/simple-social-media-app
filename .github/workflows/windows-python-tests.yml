@@ -13,19 +13,19 @@ jobs:
       postgres:
         image: postgres
         env:
-          POSTGRES_USER: ssma_admin
-          POSTGRES_PASSWORD: ssma_pass
-          POSTGRES_DB: ssma_test
+          POSTGRES_USER: pg_user
+          POSTGRES_PASSWORD: pg_pass
+          POSTGRES_DB: pg_db
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U ssma_admin"
+          --health-cmd "pg_isready -U pg_user"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
 
     env:
-      DATABASE_URL: postgresql+psycopg2://ssma_admin:ssma_pass@postgres:5432/ssma_test
+      DATABASE_URL: postgresql+psycopg2://pg_user:pg_pass@postgres:5432/pg_db
 
     strategy:
       matrix:
@@ -47,11 +47,8 @@ jobs:
 
       - name: Wait for PostgreSQL
         run: |
-          for i in {1..30}; do
-            pg_isready -h postgres -U ssma_admin -d ssma_test && break
-            echo "Waiting for PostgreSQL..."
-            sleep 2
-          done
+          echo "DATABASE_URL=postgresql+psycopg2://pg_user:pg_pass@postgres:5432/pg_db" >> $env:GITHUB_ENV
 
       - name: Run tests
-        run: pytest -v tests/
+        run: |
+          pytest -v tests/
