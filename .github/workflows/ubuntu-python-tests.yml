@@ -47,6 +47,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # Connect to postgreSQL-db and perform tests
       - name: Connect to PostgreSQL
         run: |
           pytest -v --maxfail=3 --tb=short
