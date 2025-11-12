@@ -45,10 +45,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest sqlmodel psycopg2-binary
+          pip install -r requirements.txt
 
       - name: Connect to PostgreSQL
         run: |
-          pytest -v tests/
+          pytest -v --maxfail=3 --tb=short --cov=your_package_name tests/
         env:
           DATABASE_URL: postgresql+psycopg2://ssma_user:ssma_pass@localhost:5432/ssma_db
