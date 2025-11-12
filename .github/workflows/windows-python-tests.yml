@@ -13,13 +13,13 @@ jobs:
       postgres:
         image: postgres
         env:
-          POSTGRES_USER: pg_user
-          POSTGRES_PASSWORD: pg_pass
-          POSTGRES_DB: pg_db
+          POSTGRES_USER: ssma_user
+          POSTGRES_PASSWORD: ssma_pass
+          POSTGRES_DB: ssma_db
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U pg_user"
+          --health-cmd "pg_isready -U ssma_user"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -45,10 +45,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest sqlmodel psycopg2-binary
 
-      - name: Wait for PostgreSQL
-        run: |
-          echo "DATABASE_URL=postgresql+psycopg2://pg_user:pg_pass@postgres:5432/pg_db" >> $env:GITHUB_ENV
-
       - name: Run tests
+        env:
+          DATABASE_URL: postgresql+psycopg2://ssma_user:ssma_pass@postgres:5432/ssma_db
         run: |
           pytest -v tests/
