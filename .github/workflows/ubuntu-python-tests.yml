@@ -49,6 +49,6 @@ jobs:
 
       - name: Connect to PostgreSQL
         run: |
-          pytest -v --maxfail=3 --tb=short --cov=your_package_name tests/
+          pytest -v --maxfail=3 --tb=short --cov=SSMA tests/
         env:
           DATABASE_URL: postgresql+psycopg2://ssma_user:ssma_pass@localhost:5432/ssma_db
