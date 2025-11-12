@@ -10,7 +10,8 @@ from backend.models.post import Post
 default_url = "postgresql+psycopg2://ssma_admin:ssma_2025@localhost/ssma_db"
 
 DATABASE_URL = os.getenv("DATABASE_URL", default_url)
-print(f"############################ {DATABASE_URL} #############################")
+# print(f"############################ {DATABASE_URL} #############################")
+# https://docs.github.com/de/actions/tutorials/use-containerized-services/create-postgresql-service-containers
 
 engine = create_engine(DATABASE_URL, echo=True)
 
