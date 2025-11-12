@@ -15,16 +15,5 @@ DATABASE_URL = os.getenv("DATABASE_URL", default_url)
 
 engine = create_engine(DATABASE_URL, echo=True)
 
-# Retry loop für GitHub Actions / CI (optional, schadet lokal nicht)
-# for i in range(30):
-#     try:
-#         with engine.connect():
-#             break
-#     except OperationalError:
-#         print("PostgreSQL not ready, retrying in 2s...")
-#         time.sleep(2)
-# else:
-#     raise RuntimeError("Cannot connect to PostgreSQL")
-
 SQLModel.metadata.create_all(engine)
 print("PostgreSQL database and tables created successfully!")
