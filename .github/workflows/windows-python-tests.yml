@@ -13,13 +13,13 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: testdb
+          POSTGRES_USER: pg_user
+          POSTGRES_PASSWORD: pg_pass
+          POSTGRES_DB: pg_db
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U test"
+          --health-cmd "pg_isready -U pg_user"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -44,7 +44,7 @@ jobs:
 
       - name: Set environment variable for PostgreSQL
         run: |
-          echo "DATABASE_URL=postgresql+psycopg2://test:test@localhost:5432/testdb" >> $env:GITHUB_ENV
+          echo "DATABASE_URL=postgresql+psycopg2://pg_user:pg_pass@postgres:5432/pg_db" >> $env:GITHUB_ENV
 
       - name: Run tests
         run: |
