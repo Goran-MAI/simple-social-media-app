@@ -14,6 +14,8 @@ SSMA/
         logs/
         objects/
         refs/
+    .github/
+        workflows/
     .idea/
         inspectionProfiles/
     .pytest_cache/
@@ -39,6 +41,7 @@ SSMA/
     main.py
     pathlib_output.py
     tests/
+        .pytest_cache/
         test_db.py
         __init__.py
 ```
