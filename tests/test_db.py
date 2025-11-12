@@ -5,7 +5,7 @@ import pytest
 from datetime import datetime, timedelta
 from sqlmodel import Session, select
 
-from backend.init_db import engine
+from backend.init_db import engine  # <-- reuse engine
 from backend.models.user import User
 from backend.models.post import Post
 from sqlalchemy import text
@@ -70,4 +70,3 @@ def test_create_user(session: Session):
     users = session.exec(select(User)).all()
     assert users is not None
     assert any(u.username.startswith("dummy") for u in users)
-
