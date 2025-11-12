@@ -5,7 +5,7 @@ import pytest
 from datetime import datetime, timedelta
 from sqlmodel import Session, select
 
-from backend.init_db import engine, init_db
+from backend.init_db import engine
 from backend.models.user import User
 from backend.models.post import Post
 from sqlalchemy import text

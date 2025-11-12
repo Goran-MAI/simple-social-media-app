@@ -12,13 +12,13 @@ default_url = "postgresql+psycopg2://ssma_admin:ssma_2025@localhost/ssma_db"
 DATABASE_URL = os.getenv("DATABASE_URL", default_url)
 print(DATABASE_URL)
 
-# Unterschiedliche URLs für lokal und CI
+# different URLS for local and GitHub (CI)
 DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL is None:
-    # lokal
+    # local
     DATABASE_URL = "postgresql+psycopg2://ssma_admin:ssma_pass@localhost:5432/ssma_test"
 else:
-    # CI-Umgebung (GitHub Actions)
+    # CI-Environment (GitHub Actions)
     #DATABASE_URL = DATABASE_URL
     DATABASE_URL = "postgresql+psycopg2://ssma_admin:ssma_pass@postgres:5432/ssma_test"
 
