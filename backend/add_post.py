@@ -1,5 +1,7 @@
 # backend/add_post.py
 # script execution: python -m backend.add_post
+
+
 from sqlmodel import Session, select
 from backend.models.user import User
 from backend.models.post import Post
