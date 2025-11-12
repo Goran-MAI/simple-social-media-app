@@ -4,7 +4,10 @@ from backend.models.user import User
 from backend.models.post import Post
 
 # PostgreSQL connection URL
-DATABASE_URL = "postgresql+psycopg2://ssma_admin:ssma_2025@localhost/ssma_db"
+default_url = "postgresql+psycopg2://ssma_admin:ssma_2025@localhost/ssma_db"
+
+DATABASE_URL = os.getenv("DATABASE_URL", default_url)
+print(DATABASE_URL)
 
 # Create database engine
 engine = create_engine(DATABASE_URL, echo=True)  # echo=True zeigt SQL-Statements
