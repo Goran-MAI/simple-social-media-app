@@ -1,10 +1,11 @@
 # tests/test_db.py
 # script execution: pytest tests/test_db.py -v
+
 import pytest
 from datetime import datetime, timedelta
 from sqlmodel import Session, select
 
-from backend.init_db import engine  # <-- reuse engine
+from backend.init_db import engine
 from backend.models.user import User
 from backend.models.post import Post
 from sqlalchemy import text
@@ -13,7 +14,6 @@ from sqlalchemy import text
 @pytest.fixture(name="session")
 def session_fixture():
     """Open a new session for each test and roll back after the test."""
-
     with Session(engine) as session:
         yield session
         # Cleanup test data
