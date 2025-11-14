@@ -2,6 +2,7 @@
 from typing import Optional, List, TYPE_CHECKING
 from sqlmodel import SQLModel, Field, Relationship
 
+# prevents circular imports
 if TYPE_CHECKING:
     from post import Post
 

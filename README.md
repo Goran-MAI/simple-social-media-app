@@ -95,3 +95,14 @@ Tests include:
 ```bash
 uvicorn backend.routes.user_endpoints:app --reload
 ```
+
+8. Starting frontend
+
+switch to the app folder with
+```bash
+cd frontend/app
+```
+and execute
+```bash
+npm run dev
+```
