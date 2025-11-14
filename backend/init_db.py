@@ -15,5 +15,8 @@ DATABASE_URL = os.getenv("DATABASE_URL", default_url)
 
 engine = create_engine(DATABASE_URL, echo=True)
 
-SQLModel.metadata.create_all(engine)
-print("PostgreSQL database and tables created successfully!")
+def init_db():
+    SQLModel.metadata.create_all(engine)
+    print("PostgreSQL database and tables created successfully!")
+
+init_db()
