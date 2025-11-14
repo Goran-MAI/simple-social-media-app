@@ -8,23 +8,8 @@ SSMA is a Python project that demonstrates a simple full-stack setup with **SQLM
 
 ```text
 SSMA/
-    .git/
-        hooks/
-        info/
-        logs/
-        objects/
-        refs/
     .github/
         workflows/
-    .idea/
-        inspectionProfiles/
-    .pytest_cache/
-        v/
-    .venv/
-        include/
-        Lib/
-        Scripts/
-            activate_this.py
     backend/
         add_post.py
         init_db.py
@@ -33,15 +18,23 @@ SSMA/
             user.py
             __init__.py
         routes/
+            crud/
+                post_crud.py
+                user_crud.py
+                __init__.py
+            doc/
+                openapi_post_spec.yaml
+                openapi_user_spec.yaml
+            endpoints/
+                post_routes.py
+                user_routes.py
+                __init__.py
             __init__.py
         __init__.py
     frontend/
-        src/
         __init__.py
-    main.py
     pathlib_output.py
     tests/
-        .pytest_cache/
         test_db.py
         __init__.py
 ```
