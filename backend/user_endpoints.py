@@ -29,7 +29,7 @@ def user_by_name(username: str):
     return user
 
 @app.post("/users/", response_model=UserModel)
-def user_create(
+async def user_create(
     username: str = Form(...),
     name: str = Form(...),
     surname: str = Form(...),
