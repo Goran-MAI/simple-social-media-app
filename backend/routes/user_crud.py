@@ -1,6 +1,6 @@
 from sqlmodel import Session, select
-from .models.user import User
-from .init_db import engine
+from backend.models.user import User
+from backend.init_db import engine
 from typing import List, Optional
 
 def create_user(username: str, name: str, surname: str, email: str):

@@ -90,3 +90,8 @@ Tests include:
 * Creating a user
 * Adding posts
 * Selecting the latest post by post_date
+
+7. Starting user backend
+```bash
+uvicorn backend.routes.user_endpoints:app --reload
+```
