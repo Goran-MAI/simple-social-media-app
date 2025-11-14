@@ -1,8 +1,11 @@
 # backend/models/post.py
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from datetime import datetime
 from zoneinfo import ZoneInfo  # Python 3.9+
 from sqlmodel import SQLModel, Field, Relationship
+
+if TYPE_CHECKING:
+    from user import User
 
 class Post(SQLModel, table=True):
     id: Optional[int] =  Field(default=None, primary_key=True)
