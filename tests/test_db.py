@@ -40,16 +40,16 @@ def test_create_user_and_posts(session: Session):
     # Insert multiple posts
     now = datetime.now()
     posts = [
-        Post(title="First Dummy", comment="Dummy1", img_path="https://example.com/dummy1.png", post_date=now - timedelta(days=2), user_id=user.id),
-        Post(title="Second Dummy", comment="Dummy2", img_path="https://example.com/dummy2.png", post_date=now - timedelta(days=1), user_id=user.id),
-        Post(title="Third Dummy", comment="Dummy3", img_path="https://example.com/dummy3.png", post_date=now, user_id=user.id)
+        Post(title="First Dummy", comment="Dummy1", img_path="https://example.com/dummy1.png", creation_date=now - timedelta(days=2), user_id=user.id),
+        Post(title="Second Dummy", comment="Dummy2", img_path="https://example.com/dummy2.png", creation_date=now - timedelta(days=1), user_id=user.id),
+        Post(title="Third Dummy", comment="Dummy3", img_path="https://example.com/dummy3.png", creation_date=now, user_id=user.id)
     ]
     session.add_all(posts)
     session.commit()
 
-    # Retrieve the last post based on post_date
+    # Retrieve the last post based on creation_date
     last_post = session.exec(
-        select(Post).where(Post.user_id == user.id).order_by(Post.post_date.desc())
+        select(Post).where(Post.user_id == user.id).order_by(Post.creation_date.desc())
     ).first()
 
     assert last_post is not None
@@ -57,7 +57,7 @@ def test_create_user_and_posts(session: Session):
     assert last_post.comment.startswith("Dummy3")
 
     # Optional: returning last post
-    print(f"Last post from {user.username}: {last_post.title} ({last_post.post_date})")
+    print(f"Last post from {user.username}: {last_post.title} ({last_post.creation_date})")
 
 
 def test_create_user(session: Session):

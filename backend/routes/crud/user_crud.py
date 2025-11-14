@@ -11,6 +11,14 @@ def create_user(username: str, name: str, surname: str, email: str):
         session.refresh(user)
     return user
 
+# get user by query (username, name or surname)
+def get_user_by_query(query: str) -> List[User]:
+    with Session(engine) as session:
+        statement = select(User).where(
+            (User.username.ilike(f"%{query}%")) | (User.name.ilike(f"%{query}%")) | (User.surname.ilike(f"%{query}%"))
+        )
+        return session.exec(statement).all()
+
 def get_user_by_id(user_id: int) -> Optional['User']:
     with Session(engine) as session:
         return session.get(User, user_id)

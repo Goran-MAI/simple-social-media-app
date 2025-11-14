@@ -1,0 +1,293 @@
+components:
+  schemas:
+    Body_create_post_api_posts__post:
+      properties:
+        comment:
+          title: Comment
+          type: string
+        img_path:
+          title: Img Path
+          type: string
+        title:
+          title: Title
+          type: string
+        user_id:
+          title: User Id
+          type: integer
+      required:
+      - user_id
+      - title
+      - comment
+      - img_path
+      title: Body_create_post_api_posts__post
+      type: object
+    Body_update_post_api_posts__post_id__put:
+      properties:
+        comment:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Comment
+        img_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Img Path
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+      title: Body_update_post_api_posts__post_id__put
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    Post:
+      properties:
+        comment:
+          title: Comment
+          type: string
+        creation_date:
+          format: date-time
+          title: Creation Date
+          type: string
+        id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Id
+        img_path:
+          title: Img Path
+          type: string
+        title:
+          title: Title
+          type: string
+        update_date:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Update Date
+        user_id:
+          title: User Id
+          type: integer
+      required:
+      - title
+      - comment
+      - img_path
+      - user_id
+      title: Post
+      type: object
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+info:
+  description: This is an API for a small project called 'Simple Social Media', which
+    is being developed as part of the 'Software Engineering' course.
+  title: Simple Social Media API
+  version: '0.1'
+openapi: 3.1.0
+paths:
+  /posts/:
+    get:
+      operationId: posts_list_posts__get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Post'
+                title: Response Posts List Posts  Get
+                type: array
+          description: Successful Response
+      summary: Posts List
+      tags:
+      - Posts
+    post:
+      operationId: create_post_api_posts__post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_create_post_api_posts__post'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Create Post Api
+      tags:
+      - Posts
+  /posts/search:
+    get:
+      operationId: posts_by_query_posts_search_get
+      parameters:
+      - in: query
+        name: query
+        required: true
+        schema:
+          title: Query
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Post'
+                title: Response Posts By Query Posts Search Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Posts By Query
+      tags:
+      - Posts
+  /posts/{post_id}:
+    delete:
+      operationId: delete_post_by_id_posts__post_id__delete
+      parameters:
+      - in: path
+        name: post_id
+        required: true
+        schema:
+          title: Post Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Delete Post By Id
+      tags:
+      - Posts
+    get:
+      operationId: post_by_id_posts__post_id__get
+      parameters:
+      - in: path
+        name: post_id
+        required: true
+        schema:
+          title: Post Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Post By Id
+      tags:
+      - Posts
+    put:
+      operationId: update_post_api_posts__post_id__put
+      parameters:
+      - in: path
+        name: post_id
+        required: true
+        schema:
+          title: Post Id
+          type: integer
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_update_post_api_posts__post_id__put'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Update Post Api
+      tags:
+      - Posts
+  /users/{user_id}/posts:
+    get:
+      operationId: posts_by_user_id_users__user_id__posts_get
+      parameters:
+      - in: path
+        name: user_id
+        required: true
+        schema:
+          title: User Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Post'
+                title: Response Posts By User Id Users  User Id  Posts Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Posts By User Id
+      tags:
+      - Posts
