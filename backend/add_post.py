@@ -30,7 +30,6 @@ with Session(engine) as session:
             title=post_data["title"],
             comment=post_data["comment"],
             img_path=post_data["img_path"],
-            post_date=datetime.now(),
             user_id=user.id
         )
         session.add(post)
@@ -38,8 +37,8 @@ with Session(engine) as session:
 
     # Select last post after inserts
     last_post = session.exec(
-        select(Post).where(Post.user_id == user.id).order_by(Post.post_date.desc())
+        select(Post).where(Post.user_id == user.id).order_by(Post.creation_date.desc())
     ).first()
 
     print("\nLast post:")
-    print(f"ID: {last_post.id}, title: {last_post.title}, date: {last_post.post_date}, Img-Path: {last_post.img_path}")
+    print(f"ID: {last_post.id}, title: {last_post.title}, date: {last_post.creation_date}, Img-Path: {last_post.img_path}")

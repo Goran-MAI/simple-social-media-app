@@ -12,7 +12,8 @@ class Post(SQLModel, table=True):
     title: str
     comment: str
     img_path: str
-    post_date: datetime = Field(default_factory=lambda: datetime.now(tz=ZoneInfo("Europe/Vienna")))  # current Vienna time
+    creation_date: datetime = Field(default_factory=lambda: datetime.now(tz=ZoneInfo("Europe/Vienna")))  # current Vienna time
+    update_date: Optional[datetime] = None # update timestamp
     user_id: int = Field(foreign_key="user.id")  # relation to User
 
     # Many-to-one relationship: each post belongs to one user

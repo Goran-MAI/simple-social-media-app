@@ -91,7 +91,13 @@ Tests include:
 * Adding posts
 * Selecting the latest post by post_date
 
-7. Starting user backend
+7. Starting backend (endpoints)
+* User:
 ```bash
-uvicorn backend.routes.user_endpoints:app --reload
+ uvicorn backend.routes.endpoints.user_routes:app --reload 
+```
+
+* Posts:
+```bash
+uvicorn backend.routes.endpoints.post_routes:app --reload
 ```
