@@ -1,6 +1,7 @@
 import os
 import yaml
 from fastapi import FastAPI, Form, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from backend.init_db import init_db
 from backend.routes.crud.user_crud import get_user_by_id, get_user_by_username, get_all_users, create_user, delete_user, get_user_by_query
 from backend.models.user import User as UserModel
@@ -10,6 +11,18 @@ app = FastAPI(
     title="Simple Social Media API",
     description="This is an API for a small project called 'Simple Social Media', which is being developed as part of the 'Software Engineering' course.",
     version="0.1",)
+
+origins = [
+    "http://localhost:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 @app.on_event("startup")
 def on_startup():

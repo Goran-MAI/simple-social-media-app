@@ -1,0 +1,16 @@
+.container {
+    display: flex;
+    /*border-radius: var(--bs-list-group-border-radius);
+    border: 1px solid var(--bs-border-color);*/
+}
+a {
+    background-color: rgb(5, 30, 52) !important;
+    color: rgba(255,255,255,0.8) !important;
+    font-weight: bold;
+}
+
+.user:hover {
+    background-color: rgba(71, 98, 130, 0.2);
+    color: white;
+    cursor: pointer;
+}
