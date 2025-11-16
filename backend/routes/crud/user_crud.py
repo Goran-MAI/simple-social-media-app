@@ -3,6 +3,7 @@ from backend.models.user import User
 from backend.init_db import engine
 from typing import List, Optional
 
+# create user
 def create_user(username: str, name: str, surname: str, email: str):
     user = User(username=username, name=name, surname=surname, email=email)
     with Session(engine) as session:
@@ -19,18 +20,37 @@ def get_user_by_query(query: str) -> List[User]:
         )
         return session.exec(statement).all()
 
+# get user by id
 def get_user_by_id(user_id: int) -> Optional['User']:
     with Session(engine) as session:
         return session.get(User, user_id)
 
+# get user by username
 def get_user_by_username(username: str) -> Optional['User']:
     with Session(engine) as session:
         return session.exec(select(User).where(User.username == username)).first()
 
+# get all users
 def get_all_users() -> List['User']:
     with Session(engine) as session:
         return session.exec(select(User)).all()
 
+# update user by id
+def update_user(user_id: int, email: Optional[str] = None, surname: Optional[str] = None) -> Optional[User]:
+    with Session(engine) as session:
+        user = session.get(User, user_id)
+        if not user:
+            return None
+        if email is not None:
+            user.email = email
+        if surname is not None:
+            user.surname = surname
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+        return user
+
+# delete user by id
 def delete_user(user_id: int) -> bool:
     with Session(engine) as session:
         user = session.get(User, user_id)

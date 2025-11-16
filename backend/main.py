@@ -4,11 +4,25 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.routes.endpoints.post_routes import router as post_router
 from backend.routes.endpoints.user_routes import router as user_router
 from backend.init_db import init_db
+from fastapi.staticfiles import StaticFiles
 import os, yaml
 
 app = FastAPI(title="Simple Social Media API", version="0.1")
 
-# CORS
+# serve uploads
+# create folder for img uploads (locally)
+os.makedirs("backend/uploads", exist_ok=True)
+
+# mount folder for uploads/reads
+app.mount("/uploads", StaticFiles(directory="backend/uploads"), name="uploads")
+
+# Cross-Origin Resource Sharing (CORS)
+# Origin = combination of protocol, domain, and port
+# Example:
+# http://localhost:5173 → Frontend
+# http://localhost:8000 → Backend
+# Browsers block requests from a frontend running on a different origin than the backend.
+# CORS allows the backend to explicitly permit such cross-origin requests.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -35,5 +49,7 @@ def startup_event():
         yaml.dump(app.openapi(), file, default_flow_style=False)
 
 # Including routers
+# Routes in post_routes/user_routes should be defined without the prefix path,
+# since we add it here via the `prefix` parameter.
 app.include_router(post_router, prefix="/posts")
 app.include_router(user_router, prefix="/users")

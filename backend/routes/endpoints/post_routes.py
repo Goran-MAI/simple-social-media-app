@@ -1,5 +1,6 @@
 # backend/routes/endpoints/post_routes.py
-from fastapi import APIRouter, Form, HTTPException
+from fastapi import APIRouter, Form, HTTPException, UploadFile, File
+import shutil
 import os, yaml
 from backend.init_db import init_db
 from backend.routes.crud.posts_crud import (
@@ -23,6 +24,7 @@ def posts_list():
     return get_all_posts()
 
 # get posts by query
+# /posts/search?query=...
 @router.get("/search", response_model=List[PostModel])
 def posts_by_query(query: str):
     post = get_posts_by_query(query)
@@ -52,10 +54,23 @@ async def create_post_api(
         user_id: int = Form(...),
         title: str = Form(...),
         comment: str = Form(...),
-        img_path: str = Form(...)
+        img: UploadFile = File(None)
 ):
+    img_path = ""
+    if img:
+        upload_dir = "backend/uploads"
+        os.makedirs(upload_dir, exist_ok=True)
+        file_location = os.path.join(upload_dir, img.filename)
+
+        with open(file_location, "wb") as f:
+            shutil.copyfileobj(img.file, f)
+
+        # RELATIVER Pfad für Frontend
+        img_path = f"uploads/{img.filename}"
+
     post = create_post(user_id, title, comment, img_path)
     return post
+
 
 # update post
 @router.put("/{post_id}", response_model=PostModel)
@@ -63,14 +78,21 @@ async def update_post_api(
         post_id: int,
         title: Optional[str] = Form(None),
         comment: Optional[str] = Form(None),
-        img_path: Optional[str] = Form(None)
+        img: Optional[UploadFile] = File(None)  # optionales neues Bild
 ):
-    post = update_post(
-        post_id=post_id,
-        title=title,
-        comment=comment,
-        img_path=img_path
-    )
+    img_path = None  # None = kein neues Bild
+    if img:
+        upload_dir = "backend/uploads"
+        os.makedirs(upload_dir, exist_ok=True)
+        file_location = os.path.join(upload_dir, img.filename)
+
+        with open(file_location, "wb") as f:
+            shutil.copyfileobj(img.file, f)
+
+        # RELATIVER Pfad für Frontend
+        img_path = f"uploads/{img.filename}"
+
+    post = update_post(post_id=post_id, title=title, comment=comment, img_path=img_path)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
     return post

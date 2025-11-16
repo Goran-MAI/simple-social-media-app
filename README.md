@@ -90,3 +90,17 @@ Tests include:
 python -m uvicorn backend.main:app --reload
 ```
 
+
+
+8. Web-App call:
+```text
+http://localhost:5173/
+
+
+Info: 
+It may be necessary to adjust the permissions of the "uploads" folder for local image uploads.
+The current user must have full permissions on that folder.
+
+For Windows:
+icacls backend\uploads
+```
