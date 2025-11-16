@@ -10,6 +10,7 @@ SSMA is a Python project that demonstrates a simple full-stack setup with **SQLM
 SSMA/
     .github/
         workflows/
+            ubuntu-python-tests.yml
     backend/
         add_post.py
         init_db.py
