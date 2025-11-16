@@ -1,9 +1,17 @@
+import { create } from "zustand";
+
 interface User {
   id: number
   name: string
   surname: string
   username: string
   email: string
+}
+
+interface UserStore {
+  users: User[]
+  setUsers: (users: User[]) => void
+  addUser: (user: User) => void
 }
 
 class UserService {
@@ -38,5 +46,12 @@ class UserService {
     return res.json();
   }
 }
+
+
+export const useUserStore = create<UserStore>((set) => ({
+  users: [],
+  setUsers: (users) => set({ users }),
+  addUser: (u) => set((state) => ({ users: [...state.users, u] }))
+}));
 
 export const userService = new UserService()

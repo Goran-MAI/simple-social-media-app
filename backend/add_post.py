@@ -36,9 +36,9 @@ with Session(engine) as session:
     session.commit()
 
     # Select last post after inserts
-    last_post = session.exec(
+"""     last_post = session.exec(
         select(Post).where(Post.user_id == user.id).order_by(Post.creation_date.desc())
     ).first()
 
     print("\nLast post:")
-    print(f"ID: {last_post.id}, title: {last_post.title}, date: {last_post.creation_date}, Img-Path: {last_post.img_path}")
+    print(f"ID: {last_post.id}, title: {last_post.title}, date: {last_post.creation_date}, Img-Path: {last_post.img_path}") """

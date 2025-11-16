@@ -1,6 +1,6 @@
 components:
   schemas:
-    Body_create_post_api_posts__post:
+    Body_create_post_api_posts_post:
       properties:
         comment:
           title: Comment
@@ -19,7 +19,7 @@ components:
       - title
       - comment
       - img_path
-      title: Body_create_post_api_posts__post
+      title: Body_create_post_api_posts_post
       type: object
     Body_update_post_api_posts__post_id__put:
       properties:
@@ -39,6 +39,27 @@ components:
           - type: 'null'
           title: Title
       title: Body_update_post_api_posts__post_id__put
+      type: object
+    Body_user_create_users_post:
+      properties:
+        email:
+          title: Email
+          type: string
+        name:
+          title: Name
+          type: string
+        surname:
+          title: Surname
+          type: string
+        username:
+          title: Username
+          type: string
+      required:
+      - username
+      - name
+      - surname
+      - email
+      title: Body_user_create_users_post
       type: object
     HTTPValidationError:
       properties:
@@ -85,6 +106,32 @@ components:
       - user_id
       title: Post
       type: object
+    User:
+      properties:
+        email:
+          title: Email
+          type: string
+        id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Id
+        name:
+          title: Name
+          type: string
+        surname:
+          title: Surname
+          type: string
+        username:
+          title: Username
+          type: string
+      required:
+      - username
+      - name
+      - surname
+      - email
+      title: User
+      type: object
     ValidationError:
       properties:
         loc:
@@ -113,9 +160,9 @@ info:
   version: '0.1'
 openapi: 3.1.0
 paths:
-  /posts/:
+  /posts:
     get:
-      operationId: posts_list_posts__get
+      operationId: posts_list_posts_get
       responses:
         '200':
           content:
@@ -123,19 +170,20 @@ paths:
               schema:
                 items:
                   $ref: '#/components/schemas/Post'
-                title: Response Posts List Posts  Get
+                title: Response Posts List Posts Get
                 type: array
           description: Successful Response
       summary: Posts List
       tags:
       - Posts
+      - Posts
     post:
-      operationId: create_post_api_posts__post
+      operationId: create_post_api_posts_post
       requestBody:
         content:
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Body_create_post_api_posts__post'
+              $ref: '#/components/schemas/Body_create_post_api_posts_post'
         required: true
       responses:
         '200':
@@ -152,6 +200,7 @@ paths:
           description: Validation Error
       summary: Create Post Api
       tags:
+      - Posts
       - Posts
   /posts/search:
     get:
@@ -182,6 +231,37 @@ paths:
       summary: Posts By Query
       tags:
       - Posts
+      - Posts
+  /posts/users/{user_id}:
+    get:
+      operationId: posts_by_user_id_posts_users__user_id__get
+      parameters:
+      - in: path
+        name: user_id
+        required: true
+        schema:
+          title: User Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Post'
+                title: Response Posts By User Id Posts Users  User Id  Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Posts By User Id
+      tags:
+      - Posts
+      - Posts
   /posts/{post_id}:
     delete:
       operationId: delete_post_by_id_posts__post_id__delete
@@ -207,6 +287,7 @@ paths:
       summary: Delete Post By Id
       tags:
       - Posts
+      - Posts
     get:
       operationId: post_by_id_posts__post_id__get
       parameters:
@@ -231,6 +312,7 @@ paths:
           description: Validation Error
       summary: Post By Id
       tags:
+      - Posts
       - Posts
     put:
       operationId: update_post_api_posts__post_id__put
@@ -262,9 +344,134 @@ paths:
       summary: Update Post Api
       tags:
       - Posts
-  /users/{user_id}/posts:
+      - Posts
+  /users:
     get:
-      operationId: posts_by_user_id_users__user_id__posts_get
+      operationId: users_list_users_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/User'
+                title: Response Users List Users Get
+                type: array
+          description: Successful Response
+      summary: Users List
+      tags:
+      - Users
+      - Users
+    post:
+      operationId: user_create_users_post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_user_create_users_post'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: User Create
+      tags:
+      - Users
+      - Users
+  /users/search:
+    get:
+      operationId: users_by_query_users_search_get
+      parameters:
+      - in: query
+        name: query
+        required: true
+        schema:
+          title: Query
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/User'
+                title: Response Users By Query Users Search Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Users By Query
+      tags:
+      - Users
+      - Users
+  /users/username/{username}:
+    get:
+      operationId: user_by_name_users_username__username__get
+      parameters:
+      - in: path
+        name: username
+        required: true
+        schema:
+          title: Username
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: User By Name
+      tags:
+      - Users
+      - Users
+  /users/{user_id}:
+    delete:
+      operationId: user_delete_by_id_users__user_id__delete
+      parameters:
+      - in: path
+        name: user_id
+        required: true
+        schema:
+          title: User Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: User Delete By Id
+      tags:
+      - Users
+      - Users
+    get:
+      operationId: user_by_id_users__user_id__get
       parameters:
       - in: path
         name: user_id
@@ -277,10 +484,7 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/Post'
-                title: Response Posts By User Id Users  User Id  Posts Get
-                type: array
+                $ref: '#/components/schemas/User'
           description: Successful Response
         '422':
           content:
@@ -288,6 +492,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
-      summary: Posts By User Id
+      summary: User By Id
       tags:
-      - Posts
+      - Users
+      - Users

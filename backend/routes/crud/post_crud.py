@@ -37,7 +37,9 @@ def create_post(user_id: int, title: str, comment: str, img_path: str) -> Post:
         user_id=user_id,
         title=title,
         comment=comment,
-        img_path=img_path
+        img_path=img_path,
+        creation_date=datetime.now(),
+        updated_date=datetime.now()
     )
     with Session(engine) as session:
         session.add(post)

@@ -1,5 +1,6 @@
 import './App.css';
 import UserList from './UserList';
+import PostList from './PostList';
 
 function App() {
 
@@ -7,6 +8,7 @@ function App() {
     <>
       <div>
         <UserList />
+        <PostList />
       </div>
     </>
   )
