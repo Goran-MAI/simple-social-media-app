@@ -75,6 +75,7 @@ async def user_create(
     surname: str = Form(...),
     email: str = Form(...)
 ):
+    print("Creating user with:", username, name, surname, email)
     user = create_user(username, name, surname, email)
     return user
 

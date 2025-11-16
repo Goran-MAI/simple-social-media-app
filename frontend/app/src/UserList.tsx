@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import './UserList.css'
 import { userService } from './services/userService';
+import UserFormular from './UserFormular';
 
 function UserList() {
 
@@ -21,16 +22,15 @@ function UserList() {
         loadUsers();
     }, []); // Empty dependency array means this runs once on mount
 
-    const handleAddUser = () => {
-        // TODO: open Modal/Form to add user
-        console.log('Add user clicked');
+    const addUserToList = (newUser: any) => {
+        setUsers(prev => [...prev, newUser]);  
     };
 
   return (
-
-    <>
-    <div className='container'>
-        <div className="list-group">
+    <div className='d-flex justify-content-between'>
+        <UserFormular onUserCreated={addUserToList} />
+        <div className="card list-group">
+            <h3>User list</h3>
             {users.map((user) => (
                 <a href="#" className="list-group-item list-group-item-action" key={user.id}>
                     <div className="d-flex w-100 justify-content-between">
@@ -43,14 +43,12 @@ function UserList() {
             ))}
         </div>
         <div className="user-list-header">
-            <button type="button" onClick={handleAddUser} className="btn btn-primary add-user-btn" 
-            data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Add User" >
+            <button type="button" className="btn btn-primary add-user-btn" 
+            data-bs-placement="right" data-bs-title="Add User" data-bs-toggle="collapse" data-bs-target="#userForm">
                 +
             </button>
         </div>
     </div>
-    
-    </>
   );
 }
 

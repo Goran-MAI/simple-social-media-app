@@ -22,13 +22,20 @@ class UserService {
   }
 
   async createUser(user: Omit<User, 'id'>): Promise<User> {
+    const formData = new FormData();
+
+    formData.append("username", user.username);
+    formData.append("name", user.name);
+    formData.append("surname", user.surname);
+    formData.append("email", user.email);
+
     const res = await fetch(`${this.baseUrl}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(user),
-    })
-    if (!res.ok) throw new Error('Failed to create user')
-    return res.json()
+      body: formData,
+    });
+    
+    if (!res.ok) throw new Error('Failed to create user');
+    return res.json();
   }
 }
 
