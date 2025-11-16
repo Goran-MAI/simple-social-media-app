@@ -1,53 +1,43 @@
-import os
-import yaml
-from fastapi import FastAPI, Form, HTTPException
+# backend/routes/endpoints/user_routes.py
+from fastapi import APIRouter, Form, HTTPException
 from backend.init_db import init_db
-from backend.routes.crud.user_crud import get_user_by_id, get_user_by_username, get_all_users, create_user, delete_user, get_user_by_query
+from backend.routes.crud.user_crud import (
+    get_user_by_id,
+    get_user_by_username,
+    get_all_users,
+    create_user,
+    update_user,
+    delete_user,
+    get_user_by_query
+)
 from backend.models.user import User as UserModel
-from typing import List
+from typing import List, Optional
 
-app = FastAPI(
-    title="Simple Social Media API",
-    description="This is an API for a small project called 'Simple Social Media', which is being developed as part of the 'Software Engineering' course.",
-    version="0.1",)
-
-@app.on_event("startup")
-def on_startup():
-    init_db()
-
-    openapi_schema = app.openapi()  # export open api-spec as python-dict
-    folder_path = "./backend/routes/doc/"
-    os.makedirs(folder_path, exist_ok=True)
-    yaml_file_path = os.path.join(folder_path, "openapi_user_spec.yaml")
-
-    with open(yaml_file_path, "w") as file:
-        yaml.dump(openapi_schema, file, default_flow_style=False)  # save api spec as YAML
-    print("OpenAPI-spec for USER written to {} successfully".format(yaml_file_path))
+router = APIRouter(tags=["Users"])
 
 # List all users
-@app.get("/users/", response_model=List[UserModel], tags=["Users"])
+@router.get("/", response_model=List[UserModel])
 def users_list():
     return get_all_users()
 
 # get user by query (username, name or surname)
-# /users/search?query=...
-@app.get("/users/search", response_model=List[UserModel], tags=["Users"])
+@router.get("/search", response_model=List[UserModel])
 def users_by_query(query: str):
     user = get_user_by_query(query)
     if not user:
-        raise HTTPException(status_code=404, detail="No posts found")
+        raise HTTPException(status_code=404, detail="No users found")
     return user
 
 # Get user by ID
-@app.get("/users/{user_id}", response_model=UserModel, tags=["Users"])
+@router.get("/id/{user_id}", response_model=UserModel)
 def user_by_id(user_id: int):
     user = get_user_by_id(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-# Optional: Get user by surname, name
-@app.get("/users/username/{username}", response_model=UserModel, tags=["Users"])
+# Get user by username
+@router.get("/username/{username}", response_model=UserModel)
 def user_by_name(username: str):
     user = get_user_by_username(username)
     if not user:
@@ -55,18 +45,30 @@ def user_by_name(username: str):
     return user
 
 # Create a new user
-@app.post("/users/", response_model=UserModel, tags=["Users"])
+@router.post("/", response_model=UserModel)
 async def user_create(
     username: str = Form(...),
     name: str = Form(...),
     surname: str = Form(...),
-    email: str = Form(...)
+    email: str = Form(...),
 ):
     user = create_user(username, name, surname, email)
     return user
 
+# PUT /users/{user_id} → update user
+@router.put("/{user_id}", response_model=UserModel)
+async def update_user_api(
+    user_id: int,
+    email: Optional[str] = Form(None),
+    surname: Optional[str] = Form(None)
+):
+    user = update_user(user_id, email=email, surname=surname)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
 # Delete a user by ID
-@app.delete("/users/{user_id}", tags=["Users"])
+@router.delete("/id/{user_id}")
 def user_delete_by_id(user_id: int):
     success = delete_user(user_id)
     if not success:

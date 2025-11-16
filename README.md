@@ -86,12 +86,22 @@ Tests include:
 * Selecting the latest post by post_date
 
 7. Starting backend (endpoints)
-* User:
+* Main (including User and Posts)
 ```bash
- uvicorn backend.routes.endpoints.user_routes:app --reload 
+python -m uvicorn backend.main:app --reload
 ```
 
-* Posts:
-```bash
-uvicorn backend.routes.endpoints.post_routes:app --reload
+
+
+8. Web-App call:
+```text
+http://localhost:5173/
+
+
+Info: 
+It may be necessary to adjust the permissions of the "uploads" folder for local image uploads.
+The current user must have full permissions on that folder.
+
+For Windows:
+icacls backend\uploads
 ```
