@@ -85,12 +85,8 @@ Tests include:
 * Selecting the latest post by post_date
 
 7. Starting backend (endpoints)
-* User:
+* Main (including User and Posts)
 ```bash
- uvicorn backend.routes.endpoints.user_routes:app --reload 
+python -m uvicorn backend.main:app --reload
 ```
 
-* Posts:
-```bash
-uvicorn backend.routes.endpoints.post_routes:app --reload
-```
