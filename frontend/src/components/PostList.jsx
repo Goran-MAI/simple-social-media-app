@@ -25,7 +25,7 @@ export default function PostList({ posts, selectedPost, setSelectedPost, selecte
               fontWeight: selectedPost?.id === post.id ? "bold" : "normal",
             }}
           >
-            <strong>{post.title}</strong> - {post.comment}
+            {post.title} - {post.comment}
           </li>
         ))}
       </ul>

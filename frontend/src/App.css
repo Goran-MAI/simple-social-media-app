@@ -123,6 +123,11 @@ body, html, #root {
   background-color: #3a3a3a;
 }
 
+.post.selected {
+  font-weight: bold;
+  color: #00d8ff;
+}
+
 /* Buttons */
 button {
   padding: 6px 12px;
@@ -187,4 +192,17 @@ button {
   font-size: 0.9rem;
   color: #aaa;
   margin-bottom: 10px;
+}
+
+/*Bootstrap button outline override*/
+.btn-outline-success {
+    background-color: transparent;
+    color: yellow;
+    transition: all .5s;
+}
+
+
+
+.btn-outline-success.btn:hover {
+    color: #yellow;
 }

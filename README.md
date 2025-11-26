@@ -93,10 +93,15 @@ python -m uvicorn backend.main:app --reload
 
 
 
-8. Web-App call:
+8. Execute the following commando in the frontent folder:
+```text
+...\SSMA\frontend> npm run dev
+```
+
+9. Web app call
 ```text
 http://localhost:5173/
-
+```
 
 Info: 
 It may be necessary to adjust the permissions of the "uploads" folder for local image uploads.
@@ -104,4 +109,3 @@ The current user must have full permissions on that folder.
 
 For Windows:
 icacls backend\uploads
-```

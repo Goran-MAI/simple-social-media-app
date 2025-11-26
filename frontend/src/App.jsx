@@ -5,6 +5,7 @@ import { getAllPosts } from "./api/post";
 import UserForm from "./components/UserForm";
 import PostForm from "./components/PostForm";
 import "./App.css"; // neues CSS importieren
+import Logo from "./assets/SSMA_Logo.svg"; // Pfad relativ zur JSX-Datei
 
 function App() {
   const [users, setUsers] = useState([]);
@@ -75,7 +76,7 @@ function App() {
     <div className="app-wrapper">
       {/* Header */}
       <div className="header">
-        <img src="/logo.png" alt="Logo" />
+        <img src={Logo} alt="Logo" />
         <h1>SSMA - Simple Social Media App</h1>
       </div>
 
@@ -158,22 +159,24 @@ function App() {
                     + Add Post
                   </button>
                   <form className="d-flex" onSubmit={handleSearchSubmit}>
-                    <input className="form-control me-2" type="search" placeholder="Search Title" aria-label="Search"
+                    <input className="form-control me-2 mt-1" type="search" placeholder="Search Title" aria-label="Search"
                     value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}/>
-                    <button className="btn btn-outline-success" type="submit">Search</button>
+                    <button className="btn btn-outline-info" type="submit">Search</button>
                   </form>
                 </div>
               </nav>
               <ul className="post-list">
                 {filteredPosts.map((post) => (
-                    <li
-                      key={post.id}
+                    <li key={post.id}>
+                     <span
+                      className={`post ${selectedPost?.id === post.id ? "selected" : ""}`}
                       onClick={() => {
                         setSelectedPost(post);
                         setFormType("post");
                       }}
                     >
                       {post.title}
+                      </span>
                     </li>
                   ))}
               </ul>
