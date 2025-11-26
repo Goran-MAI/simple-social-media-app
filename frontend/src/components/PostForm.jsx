@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { createPost, updatePost } from "../api/post";
 
 export default function PostForm({ selectedUser, selectedPost, setFormType, fetchPosts }) {
-  if (!selectedUser) return <p>Please select a user first</p>;
 
   const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
@@ -89,7 +88,7 @@ export default function PostForm({ selectedUser, selectedPost, setFormType, fetc
                 </div>
 
                 <div className="input-group">
-                  <input type="file" class="form-control post-input" accept="image/*" onChange={handleImageChange} aria-label="Upload"/>
+                  <input type="file" className="form-control post-input" accept="image/*" onChange={handleImageChange} aria-label="Upload"/>
                 </div>
 
                 {displayedImage && (
