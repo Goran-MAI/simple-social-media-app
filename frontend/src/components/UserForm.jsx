@@ -35,8 +35,7 @@ export default function UserForm({ mode, user, onSave, onCancel }) {
 
   // Prüft, ob sich etwas geändert hat (nur für Edit)
   const isChanged = () =>
-    formData.email !== initialData.email || formData.surname !== initialData.surname ||
-    formData.name !== initialData.name || formData.username !== initialData.username;
+    formData.email !== initialData.email || formData.surname !== initialData.surname;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -58,6 +57,7 @@ export default function UserForm({ mode, user, onSave, onCancel }) {
               className="form-control"
               value={formData.name}
               onChange={handleChange}
+              disabled={mode === "edit"}
               required
             />
           </div>
@@ -84,6 +84,7 @@ export default function UserForm({ mode, user, onSave, onCancel }) {
               className="form-control"
               value={formData.username}
               onChange={handleChange}
+              disabled={mode === "edit"}
               required
             />
           </div>
