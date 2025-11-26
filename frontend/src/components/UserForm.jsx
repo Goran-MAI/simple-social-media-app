@@ -43,10 +43,94 @@ export default function UserForm({ mode, user, onSave, onCancel }) {
   };
 
   return (
-    <div style={{ border: "1px solid #ccc", padding: "15px", borderRadius: "8px" }}>
+    <div className="card" id="userForm" style={{ borderRadius: 8, padding: 16 }}>
+      <div className="card-body">
+        <h3>{mode === "edit" ? "Edit User Formular" : "Create User Formular"}</h3>
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label htmlFor="name" className="form-label">Name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              className="form-control"
+              value={formData.name}
+              onChange={handleChange}
+              disabled={mode === "edit"}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="surname" className="form-label">Surname</label>
+            <input
+              id="surname"
+              name="surname"
+              type="text"
+              className="form-control"
+              value={formData.surname}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="username" className="form-label">Username</label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              className="form-control"
+              value={formData.username}
+              onChange={handleChange}
+              disabled={mode === "edit"}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="email" className="form-label">Email address</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              className="form-control"
+              aria-describedby="emailHelp"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+            <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
+          </div>
+
+          <div style={{ marginTop: 10 }}>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={mode === "edit" && !isChanged()}
+            >
+              {mode === "edit" ? "Save Changes" : "Submit"}
+            </button>
+
+            {onCancel && (
+              <button
+                type="button"
+                onClick={onCancel}
+                className="btn btn-secondary"
+                style={{ marginLeft: 10 }}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
+    </div>
+    /* <div style={{ border: "1px solid #ccc", padding: "15px", borderRadius: "8px" }}>
       <h2>{mode === "edit" ? "Edit User" : "Create User"}</h2>
       <form onSubmit={handleSubmit}>
-        {/* Username und Name */}
+        
         {mode === "edit" ? (
           <>
             <div>
@@ -83,7 +167,7 @@ export default function UserForm({ mode, user, onSave, onCancel }) {
           </>
         )}
 
-        {/* Editable fields */}
+        
         <div>
           <label>Email:</label>
           <input
@@ -117,6 +201,7 @@ export default function UserForm({ mode, user, onSave, onCancel }) {
           )}
         </div>
       </form>
-    </div>
+    </div> */
+    
   );
 }

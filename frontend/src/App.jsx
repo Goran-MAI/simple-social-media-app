@@ -14,6 +14,9 @@ function App() {
   const [selectedPost, setSelectedPost] = useState(null);
   const [formType, setFormType] = useState(null); // "user" oder "post"
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
+
   useEffect(() => {
     fetchUsers();
     fetchPosts();
@@ -53,6 +56,20 @@ function App() {
       alert("Error saving user: " + err.message);
     }
   };
+
+    const filteredPosts = posts.filter((p) => {
+      const matchesUser = selectedUser ? p.user_id === selectedUser.id : true;
+      const matchesSearch = appliedSearch
+        ? p.title?.toLowerCase().includes(appliedSearch.toLowerCase())
+        : true;
+      return matchesUser && matchesSearch;
+    });
+
+    const handleSearchSubmit = (e) => {
+      e.preventDefault();
+      setAppliedSearch(searchTerm.trim());
+    };
+
 
   return (
     <div className="app-wrapper">
@@ -112,7 +129,7 @@ function App() {
             />
           )}
 
-          {formType === "post" && selectedUser && (
+          {formType === "post" /*&& selectedUser*/ && (
             <PostForm
               selectedUser={selectedUser}
               selectedPost={selectedPost}
@@ -128,20 +145,27 @@ function App() {
         {/* Right Column - Posts */}
         <div className="column right-column">
           <h2>{selectedUser ? `${selectedUser.username}'s Posts` : "Posts"}</h2>
-          {selectedUser && (
+          {selectedUser ? (
             <>
-              <button
-                onClick={() => {
-                  setSelectedPost(null);
-                  setFormType("post");
-                }}
-              >
-                + Add Post
-              </button>
+              <nav className="navbar">
+                <div className="container-fluid">
+                  <button
+                    onClick={() => {
+                      setSelectedPost(null);
+                      setFormType("post");
+                    }}
+                  >
+                    + Add Post
+                  </button>
+                  <form className="d-flex" onSubmit={handleSearchSubmit}>
+                    <input className="form-control me-2" type="search" placeholder="Search Title" aria-label="Search"
+                    value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}/>
+                    <button className="btn btn-outline-success" type="submit">Search</button>
+                  </form>
+                </div>
+              </nav>
               <ul className="post-list">
-                {posts
-                  .filter((p) => p.user_id === selectedUser.id)
-                  .map((post) => (
+                {filteredPosts.map((post) => (
                     <li
                       key={post.id}
                       onClick={() => {
@@ -154,6 +178,21 @@ function App() {
                   ))}
               </ul>
             </>
+          ) : (
+            <ul className="post-list">
+                {posts
+                  .map((post) => (
+                    <li
+                      key={post.id}
+                      onClick={() => {
+                        setSelectedPost(post);
+                        setFormType("post");
+                      }}
+                    >
+                      {post.title}
+                    </li>
+                  ))}
+              </ul>
           )}
         </div>
       </div>
