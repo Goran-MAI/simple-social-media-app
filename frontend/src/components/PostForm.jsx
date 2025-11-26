@@ -71,46 +71,34 @@ export default function PostForm({ selectedUser, selectedPost, setFormType, fetc
   };
 
   return (
-    <div className="form-container">
-      <h2>{selectedPost ? "Edit Post" : `Create Post for ${selectedUser.username}`}</h2>
+    <div className="card" id="postForm">
+        <div className="card-body">
+            <h2>{selectedPost ? "Edit Post" : `Create Post for ${selectedUser.username}`}</h2>
+            {selectedPost && createdAt && (
+              <p className="post-created-at">Created at: {new Date(createdAt).toLocaleString()}</p>
+            )}
+            {displayedImage && (
+              <div className="post-image-preview">
+                <img src={displayedImage} alt="Post" />
+              </div>
+            )}
+            <form onSubmit={handleSubmit} >
+                <div className="mb-3">
+                    <label htmlFor="title" className="form-label">Title</label>
+                    <input type="text" className="form-control post-input" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required/>
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="comment" className="form-label">Comment</label>
+                    <textarea className="form-control post-input" placeholder="Comment" value={comment} onChange={(e) => setComment(e.target.value)}></textarea>
+                </div>
 
-      {selectedPost && createdAt && (
-        <p className="post-created-at">Created at: {new Date(createdAt).toLocaleString()}</p>
-      )}
+                <div className="input-group">
+                  <input type="file" class="form-control post-input" accept="image/*" onChange={handleImageChange} aria-label="Upload"/>
+                </div>
 
-      {displayedImage && (
-        <div className="post-image-preview">
-          <img src={displayedImage} alt="Post" />
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="post-form">
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="post-input"
-        />
-
-        <textarea
-          placeholder="Comment"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          className="post-input"
-        />
-
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          className="post-input"
-        />
-
-        <button type="submit" className="btn-save">
-          Save Post
-        </button>
-      </form>
-    </div>
+                <button type="submit" className="btn-save" >{selectedPost ? "Save Changes" : "Create Post"}</button>
+            </form>
+          </div>
+      </div>
   );
 }
