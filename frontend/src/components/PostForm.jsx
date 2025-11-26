@@ -77,11 +77,7 @@ export default function PostForm({ selectedUser, selectedPost, setFormType, fetc
             {selectedPost && createdAt && (
               <p className="post-created-at">Created at: {new Date(createdAt).toLocaleString()}</p>
             )}
-            {displayedImage && (
-              <div className="post-image-preview">
-                <img src={displayedImage} alt="Post" />
-              </div>
-            )}
+            
             <form onSubmit={handleSubmit} >
                 <div className="mb-3">
                     <label htmlFor="title" className="form-label">Title</label>
@@ -95,6 +91,14 @@ export default function PostForm({ selectedUser, selectedPost, setFormType, fetc
                 <div className="input-group">
                   <input type="file" class="form-control post-input" accept="image/*" onChange={handleImageChange} aria-label="Upload"/>
                 </div>
+
+                {displayedImage && (
+              <div className="post-image-preview">
+                <img src={displayedImage} className="rounded mx-auto d-block" alt="Post" />
+
+                
+              </div>
+            )}
 
                 <button type="submit" className="btn-save" >{selectedPost ? "Save Changes" : "Create Post"}</button>
             </form>
