@@ -107,7 +107,7 @@ export default function UserForm({ mode, user, onSave, onCancel }) {
           <div style={{ marginTop: 10 }}>
             <button
               type="submit"
-              className="btn btn-primary"
+              className="btn-save  mt-3"
               disabled={mode === "edit" && !isChanged()}
             >
               {mode === "edit" ? "Save Changes" : "Submit"}
@@ -117,7 +117,7 @@ export default function UserForm({ mode, user, onSave, onCancel }) {
               <button
                 type="button"
                 onClick={onCancel}
-                className="btn btn-secondary"
+                className="btn-save  mt-3"
                 style={{ marginLeft: 10 }}
               >
                 Cancel
