@@ -1,13 +1,19 @@
 # tests/test_db.py
 # script execution: pytest tests/test_db.py -v
+import sys, os
+
+current_dir = os.path.dirname(os.path.abspath(__file__))      # tests/
+project_root = os.path.abspath(os.path.join(current_dir, ".."))  # SSMA/
+
+sys.path.append(project_root)
 
 import pytest
 from datetime import datetime, timedelta
 from sqlmodel import Session, select
 
-from backend.init_db import engine  # <-- reuse engine
-from backend.models.user import User
-from backend.models.post import Post
+from init_db import engine
+from models.user import User
+from models.post import Post
 from sqlalchemy import text
 import time
 
