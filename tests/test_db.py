@@ -11,9 +11,9 @@ import pytest
 from datetime import datetime, timedelta
 from sqlmodel import Session, select
 
-from init_db import engine
-from models.user import User
-from models.post import Post
+from backend.init_db import engine
+from backend.models.user import User
+from backend.models.post import Post
 from sqlalchemy import text
 import time
 

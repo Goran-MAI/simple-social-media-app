@@ -23,13 +23,27 @@ app.mount("/uploads", StaticFiles(directory="backend/uploads"), name="uploads")
 # http://localhost:8000 → Backend
 # Browsers block requests from a frontend running on a different origin than the backend.
 # CORS allows the backend to explicitly permit such cross-origin requests.
+
+# original
+# app.add_middleware(
+#    CORSMiddleware,
+#    allow_origins=["http://localhost:5173"],
+#    allow_credentials=True,
+#    allow_methods=["*"],
+#    allow_headers=["*"],
+# )
+######
+from fastapi.middleware.cors import CORSMiddleware
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["*"],  # or ["http://localhost:8080"]
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 
 # Startup-Event
 @app.on_event("startup")

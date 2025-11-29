@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: ssma_postgres
+    environment:
+      POSTGRES_USER: ssma_user
+      POSTGRES_PASSWORD: ssma_pass
+      POSTGRES_DB: ssma_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: ssma_backend
+    environment:
+      DATABASE_URL: postgresql://ssma_user:ssma_pass@postgres:5432/ssma_db
+      PYTHONPATH: /app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    command: >
+      bash -c "
+      python init_db.py &&
+      python add_post.py &&
+      uvicorn main:app --host 0.0.0.0 --port 8000
+      "
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_API_URL: "http://localhost:8000" # "http://ssma_backend:8000"
+    container_name: ssma_frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
