@@ -60,3 +60,6 @@ Desktop.ini
  
 # Project-specific 
 pathlib_output.py 
+
+# SSH keys
+ssh_keys/
