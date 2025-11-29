@@ -27,6 +27,8 @@ services:
     depends_on:
       - postgres
     restart: unless-stopped
+    volumes:
+      - ./backend/uploads:/app/backend/uploads
     command: >
       bash -c "
       python init_db.py &&

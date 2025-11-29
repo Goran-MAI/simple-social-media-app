@@ -9,12 +9,31 @@ import os, yaml
 
 app = FastAPI(title="Simple Social Media API", version="0.1")
 
+
+def running_in_docker():
+    return os.path.exists("/.dockerenv")
+
+if running_in_docker():
+    # Docker uses WORKDIR /app/backend
+    UPLOAD_DIR = "uploads"
+else:
+    # Local environment: backend/uploads
+    UPLOAD_DIR = "backend/uploads"
+
+# Ensure upload directory exists
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# Serve uploads
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+
 # serve uploads
 # create folder for img uploads (locally)
-os.makedirs("backend/uploads", exist_ok=True)
+# original
+# os.makedirs("backend/uploads", exist_ok=True)
 
 # mount folder for uploads/reads
-app.mount("/uploads", StaticFiles(directory="backend/uploads"), name="uploads")
+# original
+# app.mount("/uploads", StaticFiles(directory="backend/uploads"), name="uploads")
 
 # Cross-Origin Resource Sharing (CORS)
 # Origin = combination of protocol, domain, and port
