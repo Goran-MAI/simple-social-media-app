@@ -2,9 +2,10 @@
 name: Deploy to Server
 
 on:
-  push:
-    branches:
-      - main  # deploy only if main has been updated
+  workflow_run:
+    workflows: ['Build & Push to GHCR']
+    types:
+      - completed
 
 permissions:
   contents: read
