@@ -8,7 +8,7 @@ on:
 
 permissions:
   contents: read
-  packages: write
+  packages: write # set write permissions ('cause of the organization-fails)
 
 jobs:
   backend:
