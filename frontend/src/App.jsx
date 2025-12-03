@@ -1,7 +1,7 @@
 // src/App.jsx
 import React, { useState, useEffect } from "react";
 import { getAllUsers, updateUser, createUser, deleteUser } from "./api/user";
-import { getAllPosts } from "./api/post";
+import { getAllPosts, deletePost } from "./api/post";
 import UserForm from "./components/UserForm";
 import PostForm from "./components/PostForm";
 import "./App.css"; // neues CSS importieren
@@ -14,7 +14,6 @@ function App() {
   const [editUser, setEditUser] = useState(null); // Für UserForm
   const [selectedPost, setSelectedPost] = useState(null);
   const [formType, setFormType] = useState(null); // "user" oder "post"
-  const [deletedUser, setDeletedUser] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [appliedSearch, setAppliedSearch] = useState("");
@@ -61,7 +60,7 @@ function App() {
 
   const handleUserDelete = async (userData) => {
     try {
-      if (deletedUser && (confirm("Are you sure you want to delete this user?") == true)) {
+      if (confirm("Are you sure you want to delete this user?") == true) {
         await deleteUser(userData.id);
         alert("User deleted successfully!");
         setEditUser(null);
@@ -70,6 +69,20 @@ function App() {
       }
     } catch (err) {
       alert("Error deleting user: " + err.message);
+    }
+  };
+
+  const handlePostDelete = async (postData) => {
+    try {
+      if (confirm("Are you sure you want to delete this post?") == true) {
+        await deletePost(postData.id);
+        alert("Post deleted successfully!");
+        setSelectedPost(null);
+        setFormType(null);
+        fetchPosts();
+      }
+    } catch (err) {
+      alert("Error deleting post: " + err.message);
     }
   };
 
@@ -121,16 +134,14 @@ function App() {
                 >
                   {user.username}
                 </span>
-                <span
+                {/*<span
                   className="user-delete-trashcan"
                   title="Delete User"
                   onClick={(e) => {
-                    e.stopPropagation(); // Verhindert das Auslösen des übergeordneten onClick
-                    setDeletedUser(user);
                     handleUserDelete(user);
                   }}
                   dangerouslySetInnerHTML={{ __html: "&#x1F5D1;" }}
-                ></span>
+                ></span>*/}
                 <span
                   className="user-edit-pencil"
                   title="Edit User"
@@ -202,6 +213,14 @@ function App() {
                     >
                       {post.title}
                       </span>
+                      <span
+                        className="post-delete-trashcan"
+                        title="Delete Post"
+                        onClick={() => {
+                          handlePostDelete(post);
+                        }}
+                        dangerouslySetInnerHTML={{ __html: "&#x1F5D1;" }}
+                      ></span>
                     </li>
                   ))}
               </ul>
@@ -210,14 +229,23 @@ function App() {
             <ul className="post-list">
                 {posts
                   .map((post) => (
-                    <li
-                      key={post.id}
+                    <li key={post.id}>
+                      <span
                       onClick={() => {
                         setSelectedPost(post);
                         setFormType("post");
                       }}
                     >
                       {post.title}
+                      </span>
+                      <span
+                        className="post-delete-trashcan"
+                        title="Delete Post"
+                        onClick={() => {
+                          handlePostDelete(post);
+                        }}
+                        dangerouslySetInnerHTML={{ __html: "&#x1F5D1;" }}
+                      ></span>
                     </li>
                   ))}
               </ul>
