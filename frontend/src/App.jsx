@@ -1,6 +1,6 @@
 // src/App.jsx
 import React, { useState, useEffect } from "react";
-import { getAllUsers, updateUser, createUser } from "./api/user";
+import { getAllUsers, updateUser, createUser, deleteUser } from "./api/user";
 import { getAllPosts } from "./api/post";
 import UserForm from "./components/UserForm";
 import PostForm from "./components/PostForm";
@@ -14,6 +14,7 @@ function App() {
   const [editUser, setEditUser] = useState(null); // Für UserForm
   const [selectedPost, setSelectedPost] = useState(null);
   const [formType, setFormType] = useState(null); // "user" oder "post"
+  const [deletedUser, setDeletedUser] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [appliedSearch, setAppliedSearch] = useState("");
@@ -55,6 +56,20 @@ function App() {
       setFormType(null);
     } catch (err) {
       alert("Error saving user: " + err.message);
+    }
+  };
+
+  const handleUserDelete = async (userData) => {
+    try {
+      if (deletedUser && (confirm("Are you sure you want to delete this user?") == true)) {
+        await deleteUser(userData.id);
+        alert("User deleted successfully!");
+        setEditUser(null);
+        setFormType(null);
+        fetchUsers();
+      }
+    } catch (err) {
+      alert("Error deleting user: " + err.message);
     }
   };
 
@@ -106,6 +121,16 @@ function App() {
                 >
                   {user.username}
                 </span>
+                <span
+                  className="user-delete-trashcan"
+                  title="Delete User"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Verhindert das Auslösen des übergeordneten onClick
+                    setDeletedUser(user);
+                    handleUserDelete(user);
+                  }}
+                  dangerouslySetInnerHTML={{ __html: "&#x1F5D1;" }}
+                ></span>
                 <span
                   className="user-edit-pencil"
                   title="Edit User"
