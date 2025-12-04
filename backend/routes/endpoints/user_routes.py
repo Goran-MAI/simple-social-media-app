@@ -68,7 +68,7 @@ async def update_user_api(
     return user
 
 # Delete a user by ID
-@router.delete("/id/{user_id}")
+@router.delete("/{user_id}")
 def user_delete_by_id(user_id: int):
     success = delete_user(user_id)
     if not success:

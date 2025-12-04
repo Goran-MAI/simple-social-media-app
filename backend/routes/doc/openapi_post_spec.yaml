@@ -392,30 +392,6 @@ paths:
       tags:
       - Users
   /users/id/{user_id}:
-    delete:
-      operationId: user_delete_by_id_users_id__user_id__delete
-      parameters:
-      - in: path
-        name: user_id
-        required: true
-        schema:
-          title: User Id
-          type: integer
-      responses:
-        '200':
-          content:
-            application/json:
-              schema: {}
-          description: Successful Response
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: User Delete By Id
-      tags:
-      - Users
     get:
       operationId: user_by_id_users_id__user_id__get
       parameters:
@@ -497,6 +473,30 @@ paths:
       tags:
       - Users
   /users/{user_id}:
+    delete:
+      operationId: user_delete_by_id_users__user_id__delete
+      parameters:
+      - in: path
+        name: user_id
+        required: true
+        schema:
+          title: User Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: User Delete By Id
+      tags:
+      - Users
     put:
       operationId: update_user_api_users__user_id__put
       parameters:

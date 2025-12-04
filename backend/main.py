@@ -9,12 +9,31 @@ import os, yaml
 
 app = FastAPI(title="Simple Social Media API", version="0.1")
 
+
+def running_in_docker():
+    return os.path.exists("/.dockerenv")
+
+if running_in_docker():
+    # Docker uses WORKDIR /app/backend
+    UPLOAD_DIR = "uploads"
+else:
+    # Local environment: backend/uploads
+    UPLOAD_DIR = "backend/uploads"
+
+# Ensure upload directory exists
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# Serve uploads
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+
 # serve uploads
 # create folder for img uploads (locally)
-os.makedirs("backend/uploads", exist_ok=True)
+# original
+# os.makedirs("backend/uploads", exist_ok=True)
 
 # mount folder for uploads/reads
-app.mount("/uploads", StaticFiles(directory="backend/uploads"), name="uploads")
+# original
+# app.mount("/uploads", StaticFiles(directory="backend/uploads"), name="uploads")
 
 # Cross-Origin Resource Sharing (CORS)
 # Origin = combination of protocol, domain, and port
@@ -23,13 +42,27 @@ app.mount("/uploads", StaticFiles(directory="backend/uploads"), name="uploads")
 # http://localhost:8000 → Backend
 # Browsers block requests from a frontend running on a different origin than the backend.
 # CORS allows the backend to explicitly permit such cross-origin requests.
+
+# original
+# app.add_middleware(
+#    CORSMiddleware,
+#    allow_origins=["http://localhost:5173"],
+#    allow_credentials=True,
+#    allow_methods=["*"],
+#    allow_headers=["*"],
+# )
+######
+from fastapi.middleware.cors import CORSMiddleware
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["*"],  # or ["http://localhost:8080"]
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 
 # Startup-Event
 @app.on_event("startup")

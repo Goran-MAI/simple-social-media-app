@@ -95,6 +95,18 @@ body, html, #root {
   color: #f5f5f5;
 }
 
+.user-delete-trashcan {
+  cursor: pointer;
+  margin-right: 10px;
+  color: #f5f5f5;
+}
+
+.post-delete-trashcan {
+  cursor: pointer;
+  margin-left: 20px;
+  color: #f5f5f5;
+}
+
 /* Mittlere Spalte - Forms */
 .column:nth-child(2) {
   background-color: #252525;
@@ -123,16 +135,21 @@ body, html, #root {
   background-color: #3a3a3a;
 }
 
+.post.selected {
+  font-weight: bold;
+  color: #00d8ff;
+}
+
 /* Buttons */
 button {
   padding: 6px 12px;
   margin-top: 5px;
-  background-color: #00d8ff;
-  borde
+  border-color: #00d8ff;
+}
 
 /* PostForm / allgemeine Form */
 .form-container {
-  background-color: #252525;
+  /* background-color: #252525; */
   padding: 15px;
   border-radius: 6px;
   margin-bottom: 20px;
@@ -148,12 +165,12 @@ button {
   padding: 8px;
   border-radius: 4px;
   border: 1px solid #444;
-  background-color: #2e2e2e;
-  color: #f0f0f0;
+  /* background-color: #2e2e2e; */
+  color: #2e2e2e;
 }
 
 .post-input::placeholder {
-  color: #aaa;
+  color: #2e2e2e;
 }
 
 .btn-save {
@@ -188,3 +205,4 @@ button {
   color: #aaa;
   margin-bottom: 10px;
 }
+

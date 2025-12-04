@@ -3,13 +3,13 @@ import React, { useState, useEffect } from "react";
 import { createPost, updatePost } from "../api/post";
 
 export default function PostForm({ selectedUser, selectedPost, setFormType, fetchPosts }) {
-  if (!selectedUser) return <p>Please select a user first</p>;
 
   const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
   const [newImage, setNewImage] = useState(null);       // hochgeladenes File
   const [existingImage, setExistingImage] = useState(null); // Bild aus DB
   const [createdAt, setCreatedAt] = useState("");
+  const [updatedAt, setUpdatedAt] = useState("");
 
   // Initialisierung beim Post-Wechsel
   useEffect(() => {
@@ -19,6 +19,7 @@ export default function PostForm({ selectedUser, selectedPost, setFormType, fetc
       setExistingImage(selectedPost.img_path || null); // <<< hier auf img_path achten
       setNewImage(null);
       setCreatedAt(selectedPost.creation_date || "");
+      setUpdatedAt(selectedPost.update_date || "");
     } else {
       setTitle("");
       setComment("");
@@ -71,46 +72,40 @@ export default function PostForm({ selectedUser, selectedPost, setFormType, fetc
   };
 
   return (
-    <div className="form-container">
-      <h2>{selectedPost ? "Edit Post" : `Create Post for ${selectedUser.username}`}</h2>
+    <div className="card" id="postForm">
+        <div className="card-body">
+            <h2>{selectedPost ? "Edit Post" : `Create Post for ${selectedUser.username}`}</h2>
+            {selectedPost && createdAt && (
+              <span className="post-created-at">Created at: {new Date(createdAt).toLocaleString()}</span>
+            )}
+            {selectedPost && updatedAt && (
+              <p className="post-created-at">Updated at: {new Date(updatedAt).toLocaleString()}</p>
+            )}
 
-      {selectedPost && createdAt && (
-        <p className="post-created-at">Created at: {new Date(createdAt).toLocaleString()}</p>
-      )}
+            
+            <form onSubmit={handleSubmit} >
+                <div className="mb-3">
+                    <label htmlFor="title" className="form-label">Title</label>
+                    <input type="text" className="form-control post-input" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required/>
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="comment" className="form-label">Comment</label>
+                    <textarea className="form-control post-input" placeholder="Comment" value={comment} onChange={(e) => setComment(e.target.value)}></textarea>
+                </div>
 
-      {displayedImage && (
-        <div className="post-image-preview">
-          <img src={displayedImage} alt="Post" />
-        </div>
-      )}
+                <div className="input-group pb-3">
+                  <input type="file" className="form-control post-input" accept="image/*" onChange={handleImageChange} aria-label="Upload"/>
+                </div>
 
-      <form onSubmit={handleSubmit} className="post-form">
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="post-input"
-        />
+                {displayedImage && (
+                  <div className="post-image-preview ">
+                    <img src={displayedImage} className="rounded-3  mx-auto d-block" alt="Post" />
+                  </div>
+            )}
 
-        <textarea
-          placeholder="Comment"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          className="post-input"
-        />
-
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          className="post-input"
-        />
-
-        <button type="submit" className="btn-save">
-          Save Post
-        </button>
-      </form>
-    </div>
+                <button type="submit" className="btn-save  mt-3" >{selectedPost ? "Save Changes" : "Create Post"}</button>
+            </form>
+          </div>
+      </div>
   );
 }
