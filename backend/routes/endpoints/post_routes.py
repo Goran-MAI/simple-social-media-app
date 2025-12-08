@@ -1,5 +1,6 @@
 # backend/routes/endpoints/post_routes.py
 from fastapi import APIRouter, Form, HTTPException, UploadFile, File
+
 import shutil
 import os, yaml
 from backend.init_db import init_db
@@ -16,6 +17,16 @@ from backend.models.post import Post as PostModel
 from typing import List, Optional
 
 router = APIRouter(tags=["Posts"])
+
+def running_in_docker():
+    return os.path.exists("/.dockerenv")
+
+if running_in_docker():
+    # Docker uses WORKDIR /app/backend
+    UPLOAD_DIR = "/app/backend/uploads"
+else:
+    # Local environment: backend/uploads
+    UPLOAD_DIR = "backend/uploads"
 
 
 # get all posts
@@ -58,9 +69,10 @@ async def create_post_api(
 ):
     img_path = ""
     if img:
-        upload_dir = "backend/uploads"
-        os.makedirs(upload_dir, exist_ok=True)
-        file_location = os.path.join(upload_dir, img.filename)
+        # upload_dir = "backend/uploads"
+        # os.makedirs(upload_dir, exist_ok=True)
+        os.makedirs(UPLOAD_DIR, exist_ok=True)
+        file_location = os.path.join(UPLOAD_DIR, img.filename)
 
         with open(file_location, "wb") as f:
             shutil.copyfileobj(img.file, f)
@@ -82,9 +94,9 @@ async def update_post_api(
 ):
     img_path = None  # None = kein neues Bild
     if img:
-        upload_dir = "backend/uploads"
-        os.makedirs(upload_dir, exist_ok=True)
-        file_location = os.path.join(upload_dir, img.filename)
+        # upload_dir = "backend/uploads"
+        os.makedirs(UPLOAD_DIR, exist_ok=True)
+        file_location = os.path.join(UPLOAD_DIR, img.filename)
 
         with open(file_location, "wb") as f:
             shutil.copyfileobj(img.file, f)

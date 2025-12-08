@@ -15,7 +15,7 @@ def running_in_docker():
 
 if running_in_docker():
     # Docker uses WORKDIR /app/backend
-    UPLOAD_DIR = "uploads"
+    UPLOAD_DIR = "/app/backend/uploads"
 else:
     # Local environment: backend/uploads
     UPLOAD_DIR = "backend/uploads"
