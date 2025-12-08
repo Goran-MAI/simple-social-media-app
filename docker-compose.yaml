@@ -5,9 +5,9 @@ services:
     image: postgres:16
     container_name: ssma_postgres
     environment:
-      POSTGRES_USER: ssma_user
-      POSTGRES_PASSWORD: ssma_pass
-      POSTGRES_DB: ssma_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
@@ -20,7 +20,7 @@ services:
       dockerfile: backend/Dockerfile
     container_name: ssma_backend
     environment:
-      DATABASE_URL: postgresql://ssma_user:ssma_pass@postgres:5432/ssma_db
+      DATABASE_URL: ${DATABASE_URL}
       PYTHONPATH: /app
     ports:
       - "8000:8000"
@@ -41,7 +41,7 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
       args:
-        VITE_API_URL: "http://localhost:8000" # "http://ssma_backend:8000"
+        VITE_API_URL: ${VITE_API_URL} # "http://ssma_backend:8000"
     container_name: ssma_frontend
     ports:
       - "8080:80"

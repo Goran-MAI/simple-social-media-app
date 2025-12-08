@@ -7,7 +7,8 @@ from backend.models.user import User # do not delete this line!!!
 from backend.models.post import Post # do not delete this line!!!
 
 # PostgreSQL connection URL
-default_url = "postgresql+psycopg2://ssma_admin:ssma_2025@localhost/ssma_db"
+#default_url = "postgresql+psycopg2://ssma_admin:ssma_2025@localhost/ssma_db"
+default_url = "postgresql://ssma_user:ssma_pass@postgres:5432/ssma_db"
 
 DATABASE_URL = os.getenv("DATABASE_URL", default_url)
 # print(f"############################ {DATABASE_URL} #############################")
