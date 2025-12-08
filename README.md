@@ -98,9 +98,10 @@ python -m uvicorn backend.main:app --reload
 ...\SSMA\frontend> npm run dev
 ```
 
-9. Web app call
+9. As the SSMA web app is now containerized, it can be accessed through: 
 ```text
-http://localhost:5173/
+Frontend: http://localhost:8080/
+Backend API: http://localhost:8000/
 ```
 
 Info: 
