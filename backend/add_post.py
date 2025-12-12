@@ -20,9 +20,9 @@ with Session(engine) as session:
 
     # add some example posts
     posts_data = [
-        {"title": "Hello World", "comment": "My first post!", "img_path": "uploads/kanban_grey.png"},
-        {"title": "Second Post", "comment": "I really like SQLModel.", "img_path": "uploads/frozen_reports_grey.png"},
-        {"title": "Third Post", "comment": "Once again. I. REALLY. LIKE. SQLMODEL.", "img_path": "uploads/handshake_grey.png"},
+        {"title": "Hello World", "comment": "My first post!", "img_path": "uploads/kanban_grey.png", "img_small_path": "uploads/kanban_grey_small.png"},
+        {"title": "Second Post", "comment": "I really like SQLModel.", "img_path": "uploads/frozen_reports_grey.png", "img_small_path": "uploads/frozen_reports_grey_small.png"},
+        {"title": "Third Post", "comment": "Once again. I. REALLY. LIKE. SQLMODEL.", "img_path": "uploads/handshake_grey.png", "img_small_path": "uploads/handshake_grey_small.png"},
     ]
 
     for post_data in posts_data:
@@ -30,6 +30,7 @@ with Session(engine) as session:
             title=post_data["title"],
             comment=post_data["comment"],
             img_path=post_data["img_path"],
+            img_small_path=post_data["img_path"],
             user_id=user.id
         )
         session.add(post)

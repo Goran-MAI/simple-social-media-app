@@ -63,6 +63,7 @@ def update_post(post_id: int, title: Optional[str] = None, comment: Optional[str
         if img_path is not None:
             post.img_path = img_path
 
+
         # set update_date
         post.update_date = datetime.now(tz=ZoneInfo("Europe/Vienna"))
 
@@ -83,3 +84,12 @@ def delete_post(post_id: int) -> bool:
             session.commit()
             return True
     return False
+
+def update_post_small_image(post_id: int, small_img_path: str, db: Session):
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not post:
+        return None
+    post.img_small_path = small_img_path
+    db.commit()
+    db.refresh(post)
+    return post

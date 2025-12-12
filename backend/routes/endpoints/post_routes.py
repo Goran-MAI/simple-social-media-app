@@ -1,9 +1,9 @@
 # backend/routes/endpoints/post_routes.py
 from fastapi import APIRouter, Form, HTTPException, UploadFile, File
-
 import shutil
-import os, yaml
-from backend.init_db import init_db
+import os
+import pika
+import logging
 from backend.routes.crud.posts_crud import (
     get_all_posts,
     get_posts_by_user_id,
@@ -21,21 +21,41 @@ router = APIRouter(tags=["Posts"])
 def running_in_docker():
     return os.path.exists("/.dockerenv")
 
-if running_in_docker():
-    # Docker uses WORKDIR /app/backend
-    UPLOAD_DIR = "/app/backend/uploads"
-else:
-    # Local environment: backend/uploads
-    UPLOAD_DIR = "backend/uploads"
+# Set upload directory depending on environment
+UPLOAD_DIR = "/app/backend/uploads" if running_in_docker() else "backend/uploads"
 
 
-# get all posts
+# --- Send message to RabbitMQ ---
+def send_to_queue(filename: str, queue_name: str = "image_resize"):
+    """
+    Send a filename to the RabbitMQ queue for async resizing.
+    """
+    rabbit_host = os.environ.get("RABBITMQ_HOST", "rabbitmq")
+    try:
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host=rabbit_host))
+        channel = connection.channel()
+        channel.queue_declare(queue=queue_name, durable=True)
+        channel.basic_publish(
+            exchange='',
+            routing_key=queue_name,
+            body=filename,
+            properties=pika.BasicProperties(delivery_mode=2)
+        )
+        logging.info(f"Sent '{filename}' to RabbitMQ queue '{queue_name}'")
+    except Exception as e:
+        logging.error(f"Failed to send '{filename}' to RabbitMQ: {e}")
+    finally:
+        if 'connection' in locals() and connection.is_open:
+            connection.close()
+
+
+# --- CRUD endpoints ---
+
 @router.get("/", response_model=List[PostModel])
 def posts_list():
     return get_all_posts()
 
-# get posts by query
-# /posts/search?query=...
+
 @router.get("/search", response_model=List[PostModel])
 def posts_by_query(query: str):
     post = get_posts_by_query(query)
@@ -43,7 +63,7 @@ def posts_by_query(query: str):
         raise HTTPException(status_code=404, detail="No posts found")
     return post
 
-# get post by id
+
 @router.get("/{post_id}", response_model=PostModel)
 def post_by_id(post_id: int):
     post = get_post_by_id(post_id)
@@ -51,7 +71,7 @@ def post_by_id(post_id: int):
         raise HTTPException(status_code=404, detail="Post not found")
     return post
 
-# get all posts by user
+
 @router.get("/user/{user_id}", response_model=List[PostModel])
 def posts_by_user_id(user_id: int):
     post = get_posts_by_user_id(user_id)
@@ -59,7 +79,17 @@ def posts_by_user_id(user_id: int):
         raise HTTPException(status_code=404, detail="User has no posts")
     return post
 
-# create post
+
+# --- Helper: check if small image exists ---
+def small_image_path(filename: str) -> Optional[str]:
+    name, ext = os.path.splitext(filename)
+    small_filename = f"{name}_small{ext}"
+    if os.path.exists(os.path.join(UPLOAD_DIR, small_filename)):
+        return f"uploads/{small_filename}"
+    return None
+
+
+# --- Create Post ---
 @router.post("/", response_model=PostModel)
 async def create_post_api(
         user_id: int = Form(...),
@@ -68,48 +98,69 @@ async def create_post_api(
         img: UploadFile = File(None)
 ):
     img_path = ""
+    img_small = None
     if img:
-        # upload_dir = "backend/uploads"
-        # os.makedirs(upload_dir, exist_ok=True)
         os.makedirs(UPLOAD_DIR, exist_ok=True)
         file_location = os.path.join(UPLOAD_DIR, img.filename)
 
+        # Save original image
         with open(file_location, "wb") as f:
             shutil.copyfileobj(img.file, f)
 
-        # RELATIVER Pfad für Frontend
+        # relative path for frontend
         img_path = f"uploads/{img.filename}"
 
+        # send filename to RabbitMQ for async resizing
+        send_to_queue(img.filename)
+
+        # try to detect small image if it already exists
+        img_small = small_image_path(img.filename)
+
     post = create_post(user_id, title, comment, img_path)
+
+    # attach small image path if available
+    setattr(post, "img_small_path", img_small)
+
     return post
 
 
-# update post
+# --- Update Post ---
 @router.put("/{post_id}", response_model=PostModel)
 async def update_post_api(
         post_id: int,
         title: Optional[str] = Form(None),
         comment: Optional[str] = Form(None),
-        img: Optional[UploadFile] = File(None)  # optionales neues Bild
+        img: Optional[UploadFile] = File(None)
 ):
-    img_path = None  # None = kein neues Bild
+    img_path = None
+    img_small = None
     if img:
-        # upload_dir = "backend/uploads"
         os.makedirs(UPLOAD_DIR, exist_ok=True)
         file_location = os.path.join(UPLOAD_DIR, img.filename)
 
+        # Save new original image
         with open(file_location, "wb") as f:
             shutil.copyfileobj(img.file, f)
 
-        # RELATIVER Pfad für Frontend
         img_path = f"uploads/{img.filename}"
+
+        # send filename to RabbitMQ for async resizing
+        send_to_queue(img.filename)
+
+        # try to detect small image if already exists
+        img_small = small_image_path(img.filename)
 
     post = update_post(post_id=post_id, title=title, comment=comment, img_path=img_path)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
+
+    # attach small image path if available
+    setattr(post, "img_small_path", img_small)
+
     return post
 
-# delete post by post_id
+
+# --- Delete Post ---
 @router.delete("/{post_id}")
 def delete_post_by_id(post_id: int):
     success = delete_post(post_id)

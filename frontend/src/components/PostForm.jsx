@@ -1,22 +1,25 @@
 // src/components/PostForm.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createPost, updatePost } from "../api/post";
 
 export default function PostForm({ selectedUser, selectedPost, setFormType, fetchPosts }) {
 
   const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
-  const [newImage, setNewImage] = useState(null);       // hochgeladenes File
-  const [existingImage, setExistingImage] = useState(null); // Bild aus DB
+  const [newImage, setNewImage] = useState(null);
+  const [existingImage, setExistingImage] = useState(null);
   const [createdAt, setCreatedAt] = useState("");
   const [updatedAt, setUpdatedAt] = useState("");
+  const [displayedImage, setDisplayedImage] = useState(null);
 
-  // Initialisierung beim Post-Wechsel
+  const pollerRef = useRef(null); // store poller ID
+
+  // Initialize form whenever selectedPost changes
   useEffect(() => {
     if (selectedPost) {
       setTitle(selectedPost.title || "");
       setComment(selectedPost.comment || "");
-      setExistingImage(selectedPost.img_path || null); // <<< hier auf img_path achten
+      setExistingImage(selectedPost.img_small_path || selectedPost.img_path || null);
       setNewImage(null);
       setCreatedAt(selectedPost.creation_date || "");
       setUpdatedAt(selectedPost.update_date || "");
@@ -29,17 +32,70 @@ export default function PostForm({ selectedUser, selectedPost, setFormType, fetc
     }
   }, [selectedPost]);
 
+  // Update displayed image whenever newImage or existingImage changes
+  useEffect(() => {
+    if (newImage) {
+      setDisplayedImage(URL.createObjectURL(newImage));
+    } else if (existingImage) {
+      setDisplayedImage(`http://localhost:8000/${existingImage}`);
+    } else {
+      setDisplayedImage(null);
+    }
+  }, [newImage, existingImage]);
+
+  // Handle image file selection
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) setNewImage(file);
   };
 
-  // Bild, das angezeigt wird: neues File oder bestehendes Bild aus DB
-  const displayedImage = newImage
-    ? URL.createObjectURL(newImage)
-    : existingImage
-    ? `http://localhost:8000/${existingImage}` // <<< bestehendes Bild korrekt einbinden
-    : null;
+  // Helper: construct small image path
+  const getSmallImagePath = (path) => {
+    if (!path) return null;
+    const dotIndex = path.lastIndexOf(".");
+    if (dotIndex === -1) return path + "_small";
+    return path.substring(0, dotIndex) + "_small" + path.substring(dotIndex);
+  };
+
+  // Poll backend for small image after upload
+  useEffect(() => {
+    // clear any existing poller
+    if (pollerRef.current) {
+      clearInterval(pollerRef.current);
+      pollerRef.current = null;
+    }
+
+    if (!newImage) return;
+
+    const filename = newImage.name;
+    const smallPath = getSmallImagePath(filename);
+
+    const checkSmallImage = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/${smallPath}`, { method: "HEAD" });
+        if (response.ok) {
+          setDisplayedImage(`http://localhost:8000/${smallPath}`);
+          if (pollerRef.current) {
+            clearInterval(pollerRef.current);
+            pollerRef.current = null;
+          }
+        }
+      } catch (err) {
+        // small image not yet available, ignore
+      }
+    };
+
+    pollerRef.current = setInterval(checkSmallImage, 1500);
+
+    // Cleanup on unmount or image change
+    return () => {
+      if (pollerRef.current) {
+        clearInterval(pollerRef.current);
+        pollerRef.current = null;
+      }
+    };
+
+  }, [newImage]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,14 +103,12 @@ export default function PostForm({ selectedUser, selectedPost, setFormType, fetc
 
     try {
       if (selectedPost) {
-        // Update bestehender Post
         await updatePost(selectedPost.id, {
           title,
           comment,
           img: newImage,
         });
       } else {
-        // Neuer Post
         await createPost({
           user_id: selectedUser.id,
           title,
@@ -63,49 +117,73 @@ export default function PostForm({ selectedUser, selectedPost, setFormType, fetc
         });
       }
 
-      setFormType(null); // Form schließen
-      fetchPosts();       // Liste neu laden
+      setFormType(null);
+      fetchPosts();
     } catch (err) {
       console.error(err);
-      alert("Fehler beim Speichern des Posts");
+      alert("Error saving post");
     }
   };
 
   return (
     <div className="card" id="postForm">
-        <div className="card-body">
-            <h2>{selectedPost ? "Edit Post" : `Create Post for ${selectedUser.username}`}</h2>
-            {selectedPost && createdAt && (
-              <span className="post-created-at">Created at: {new Date(createdAt).toLocaleString()}</span>
-            )}
-            {selectedPost && updatedAt && (
-              <p className="post-created-at">Updated at: {new Date(updatedAt).toLocaleString()}</p>
-            )}
+      <div className="card-body">
+        <h2>{selectedPost ? "Edit Post" : `Create Post for ${selectedUser.username}`}</h2>
+        {selectedPost && createdAt && (
+          <span className="post-created-at">Created at: {new Date(createdAt).toLocaleString()}</span>
+        )}
+        {selectedPost && updatedAt && (
+          <p className="post-created-at">Updated at: {new Date(updatedAt).toLocaleString()}</p>
+        )}
 
-            
-            <form onSubmit={handleSubmit} >
-                <div className="mb-3">
-                    <label htmlFor="title" className="form-label">Title</label>
-                    <input type="text" className="form-control post-input" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required/>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="comment" className="form-label">Comment</label>
-                    <textarea className="form-control post-input" placeholder="Comment" value={comment} onChange={(e) => setComment(e.target.value)}></textarea>
-                </div>
-
-                <div className="input-group pb-3">
-                  <input type="file" className="form-control post-input" accept="image/*" onChange={handleImageChange} aria-label="Upload"/>
-                </div>
-
-                {displayedImage && (
-                  <div className="post-image-preview ">
-                    <img src={displayedImage} className="rounded-3  mx-auto d-block" alt="Post" />
-                  </div>
-            )}
-
-                <button type="submit" className="btn-save  mt-3" >{selectedPost ? "Save Changes" : "Create Post"}</button>
-            </form>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label htmlFor="title" className="form-label">Title</label>
+            <input
+              type="text"
+              className="form-control post-input"
+              placeholder="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
           </div>
+
+          <div className="mb-3">
+            <label htmlFor="comment" className="form-label">Comment</label>
+            <textarea
+              className="form-control post-input"
+              placeholder="Comment"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
+          </div>
+
+          <div className="input-group pb-3">
+            <input
+              type="file"
+              className="form-control post-input"
+              accept="image/*"
+              onChange={handleImageChange}
+              aria-label="Upload"
+            />
+          </div>
+
+          {displayedImage && (
+            <div className="post-image-preview">
+              <img
+                src={displayedImage}
+                className="rounded-3 mx-auto d-block"
+                alt="Post"
+              />
+            </div>
+          )}
+
+          <button type="submit" className="btn-save mt-3">
+            {selectedPost ? "Save Changes" : "Create Post"}
+          </button>
+        </form>
       </div>
+    </div>
   );
 }
