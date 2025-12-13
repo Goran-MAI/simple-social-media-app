@@ -66,12 +66,12 @@ services:
       - "5672:5672" # Messaging
       - "15672:15672" # Web UI
     environment:
-      environment:
-      RABBITMQ_USER: rabbit
-      RABBITMQ_PASS: bunny_pass
-      RABBITMQ_HOST: ${RABBITMQ_HOST}
-      RABBITMQ_PORT: ${RABBITMQ_PORT}
-      RABBITMQ_QUEUE: ${RABBITMQ_QUEUE}
+      RABBITMQ_DEFAULT_USER: rabbit
+      RABBITMQ_DEFAULT_PASS: bunny_pass
+      RABBITMQ_DEFAULT_VHOST: /
+      # RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_NODE_PORT: ${RABBITMQ_PORT}
+      # RABBITMQ_QUEUE: ${RABBITMQ_QUEUE}
     restart: unless-stopped
     networks:
       - ssma_net
