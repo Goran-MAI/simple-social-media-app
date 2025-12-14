@@ -14,23 +14,24 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # --- Connect to RabbitMQ ---
 def connect_rabbit():
-    rabbitmq_user = os.getenv("RABBITMQ_USER")
-    rabbitmq_password = os.getenv("RABBITMQ_PASS")
-    rabbitmq_host = os.getenv("RABBITMQ_HOST")
-    rabbitmq_port = os.getenv("RABBITMQ_PORT")
-    rabbitmq_queue = os.getenv("RABBITMQ_QUEUE")
+    RABBITMQ_DEFAULT_USER = os.getenv("RABBITMQ_DEFAULT_USER")
+    RABBITMQ_DEFAULT_PASS = os.getenv("RABBITMQ_DEFAULT_PASS")
+    RABBITMQ_HOST = os.getenv("RABBITMQ_HOST")
+    RABBITMQ_PORT = os.getenv("RABBITMQ_PORT")
+    RABBITMQ_QUEUE = os.getenv("RABBITMQ_QUEUE")
 
-    if not all([rabbitmq_user, rabbitmq_password, rabbitmq_host, rabbitmq_port, rabbitmq_queue]):
+    if not all([RABBITMQ_DEFAULT_USER, RABBITMQ_DEFAULT_PASS, RABBITMQ_HOST, RABBITMQ_PORT, RABBITMQ_QUEUE]):
         raise ValueError("One or more RabbitMQ environment variables are missing!")
 
-    print("#######################", rabbitmq_user, "####", rabbitmq_password, "####", rabbitmq_queue, "####",
-            rabbitmq_host, "####", rabbitmq_port,
+    print("#######################", RABBITMQ_DEFAULT_USER, "####", RABBITMQ_DEFAULT_PASS, "####", RABBITMQ_QUEUE, "####",
+            RABBITMQ_HOST, "####", RABBITMQ_PORT,
           "#########################")
 
-    credentials = pika.PlainCredentials(rabbitmq_user, rabbitmq_password)
+
+    credentials = pika.PlainCredentials(RABBITMQ_DEFAULT_USER, RABBITMQ_DEFAULT_PASS)
     parameters = pika.ConnectionParameters(
-        host=rabbitmq_host,
-        port=int(rabbitmq_port),
+        host=RABBITMQ_HOST,
+        port=int(RABBITMQ_PORT),
         virtual_host="/",
         credentials=credentials
     )
@@ -39,7 +40,7 @@ def connect_rabbit():
     channel = connection.channel()
 
     # Declare the queue, just in case
-    channel.queue_declare(queue=rabbitmq_queue, durable=True)
+    channel.queue_declare(queue=RABBITMQ_QUEUE, durable=True)
 
     return connection, channel
 

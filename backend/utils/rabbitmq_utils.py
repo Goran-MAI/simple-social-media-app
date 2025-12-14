@@ -5,9 +5,8 @@ import logging
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-RABBITMQ_HOST = os.getenv("RABBITMQ_HOST")
-RABBITMQ_USER = os.getenv("RABBITMQ_USER")
-RABBITMQ_PASS = os.getenv("RABBITMQ_PASS")
+RABBITMQ_DEFAULT_USER = os.getenv("RABBITMQ_DEFAULT_USER")
+RABBITMQ_DEFAULT_PASS = os.getenv("RABBITMQ_DEFAULT_PASS")
 RABBITMQ_QUEUE = os.getenv("RABBITMQ_QUEUE")
 RABBITMQ_PORT = os.getenv("RABBITMQ_PORT")
 
@@ -15,12 +14,12 @@ def send_to_queue(filename: str):
     retries = 5
     for _ in range(retries):
         try:
-            print("#######################", RABBITMQ_USER, "####", RABBITMQ_PASS, "####",
-                  RABBITMQ_QUEUE, '####', RABBITMQ_HOST, '####', RABBITMQ_PORT, "#########################")
-            credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
+#            print("#######################", RABBITMQ_USER, "####", RABBITMQ_PASS, "####",
+#                  RABBITMQ_QUEUE, '####', RABBITMQ_HOST, '####', RABBITMQ_PORT, "#########################")
+            credentials = pika.PlainCredentials(RABBITMQ_DEFAULT_USER, RABBITMQ_DEFAULT_PASS)
             connection = pika.BlockingConnection(
                 pika.ConnectionParameters(
-                    host=RABBITMQ_HOST,
+                    host='localhost',
                     credentials=credentials
                 )
             )
@@ -36,7 +35,7 @@ def send_to_queue(filename: str):
             )
             logging.info(f"Sent file '{filename}' to the queue")
             connection.close()
-            break  # Wenn die Verbindung erfolgreich war, breche die Schleife ab
+            break  # Exit the loop if the connection is successful.
 
         except pika.exceptions.AMQPConnectionError as e:
             logging.error(f"Connection error: {e}")

@@ -26,27 +26,45 @@ UPLOAD_DIR = "/app/backend/uploads" if running_in_docker() else "backend/uploads
 
 
 # --- Send message to RabbitMQ ---
-def send_to_queue(filename: str, queue_name: str = "image_resize"):
-    """
-    Send a filename to the RabbitMQ queue for async resizing.
-    """
-    rabbit_host = os.environ.get("RABBITMQ_HOST", "rabbitmq")
+def send_to_queue(filename: str):
+    RABBITMQ_HOST = os.getenv("RABBITMQ_HOST")
+    RABBITMQ_PORT = int(os.getenv("RABBITMQ_PORT"))
+    RABBITMQ_USER = os.getenv("RABBITMQ_USER")
+    RABBITMQ_PASS = os.getenv("RABBITMQ_PASS")
+    RABBITMQ_QUEUE = os.getenv("RABBITMQ_QUEUE")
+
+    print("#######################", RABBITMQ_USER, "###", RABBITMQ_PASS, "###",
+          RABBITMQ_QUEUE, "####", RABBITMQ_HOST, "####", RABBITMQ_PORT,
+          "#########################")
+
+    if not RABBITMQ_USER or not RABBITMQ_PASS:
+        raise RuntimeError("RabbitMQ credentials missing in backend!")
+
+    credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
+
     try:
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host=rabbit_host))
+        connection = pika.BlockingConnection(
+            pika.ConnectionParameters(
+                host=RABBITMQ_HOST,
+                port=RABBITMQ_PORT,
+                credentials=credentials
+            )
+        )
         channel = connection.channel()
-        channel.queue_declare(queue=queue_name, durable=True)
+        channel.queue_declare(queue=RABBITMQ_QUEUE, durable=True)
         channel.basic_publish(
             exchange='',
-            routing_key=queue_name,
+            routing_key=RABBITMQ_QUEUE,
             body=filename,
             properties=pika.BasicProperties(delivery_mode=2)
         )
-        logging.info(f"Sent '{filename}' to RabbitMQ queue '{queue_name}'")
+        logging.info(f"Sent '{filename}' to RabbitMQ queue '{RABBITMQ_QUEUE}'")
     except Exception as e:
         logging.error(f"Failed to send '{filename}' to RabbitMQ: {e}")
     finally:
         if 'connection' in locals() and connection.is_open:
             connection.close()
+
 
 
 # --- CRUD endpoints ---
