@@ -55,25 +55,40 @@ def create_small_image(filename):
         logging.warning(f"Original image not found: {original_path}")
         return
 
+#    try:
+#        with Image.open(original_path) as img:
+#            # save color mode
+#            img = img.convert("RGB")
+#
+#            # Calculate new image-size to 25% of the original size
+#            width, height = img.size
+#            new_width = max(1, int(width * 0.25))
+#            new_height = max(1, int(height * 0.25))
+#            new_size = (new_width, new_height)
+
+#            # Scale image down.
+#            img_resized = img.resize(new_size, Image.Resampling.LANCZOS)
+
+#            # Speichere das Bild
+#            img_resized.save(small_path)
+#        logging.info(f"Created small image: {small_path}")
+#    except Exception as e:
+#        logging.error(f"Failed to resize {filename}: {e}")
+
     try:
         with Image.open(original_path) as img:
-            # save color mode
             img = img.convert("RGB")
 
-            # Calculate new image-size to 25% of the original size
-            width, height = img.size
-            new_width = max(1, int(width * 0.25))
-            new_height = max(1, int(height * 0.25))
-            new_size = (new_width, new_height)
+            max_size = (250, 10000)  # Breite = 250px, Höhe unbeschränkt
+            img.thumbnail(max_size, Image.Resampling.LANCZOS)
 
-            # Scale image down.
-            img_resized = img.resize(new_size, Image.Resampling.LANCZOS)
+            img.save(small_path)
 
-            # Speichere das Bild
-            img_resized.save(small_path)
-        logging.info(f"Created small image: {small_path}")
+            logging.info(f"Created small image: {small_path}")
     except Exception as e:
         logging.error(f"Failed to resize {filename}: {e}")
+
+
 
 
 # --- Callback for RabbitMQ messages ---

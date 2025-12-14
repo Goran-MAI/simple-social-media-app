@@ -37,8 +37,6 @@ services:
       - ./backend/uploads:/app/backend/uploads
     command: >
       bash -c "
-      python init_db.py &&
-      python add_post.py &&
       uvicorn main:app --host 0.0.0.0 --port 8000
       "
     networks:

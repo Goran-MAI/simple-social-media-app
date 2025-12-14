@@ -5,6 +5,8 @@ from typing import List, Optional
 from datetime import datetime
 from zoneinfo import ZoneInfo  # Python 3.9+
 from sqlmodel import SQLModel, Field, Relationship
+# from backend.utils.rabbitmq_utils import send_to_queue
+import os
 
 # get all posts
 def get_all_posts() -> List['Post']:
@@ -33,16 +35,29 @@ def get_post_by_id(post_id: int) -> Optional['Post']:
 
 # create post
 def create_post(user_id: int, title: str, comment: str, img_path: str) -> Post:
+    img_small_path = None
+    if img_path:
+        name, ext = os.path.splitext(img_path)
+        img_small_path = f"{name}_small{ext}"
+
+
     post = Post(
         user_id=user_id,
         title=title,
         comment=comment,
-        img_path=img_path
+        img_path=img_path,
+        img_small_path=img_small_path  # wird später vom Microservice gesetzt
     )
     with Session(engine) as session:
         session.add(post)
         session.commit()
         session.refresh(post)
+
+    # Send image name to queue if it exists
+    #if img_path:
+    #    filename = os.path.basename(img_path)
+    #    send_to_queue(filename)
+
     return post
 
 # update post
@@ -62,7 +77,14 @@ def update_post(post_id: int, title: Optional[str] = None, comment: Optional[str
             post.comment = comment
         if img_path is not None:
             post.img_path = img_path
+            # "Hardkodiert" den Small-Pfad
+            name, ext = os.path.splitext(img_path)
+            post.img_small_path = f"{name}_small{ext}"
 
+            # Send image name to queue if it exists
+            #if img_path:
+            #    filename = os.path.basename(img_path)
+            #    send_to_queue(filename)
 
         # set update_date
         post.update_date = datetime.now(tz=ZoneInfo("Europe/Vienna"))
@@ -85,11 +107,4 @@ def delete_post(post_id: int) -> bool:
             return True
     return False
 
-def update_post_small_image(post_id: int, small_img_path: str, db: Session):
-    post = db.query(Post).filter(Post.id == post_id).first()
-    if not post:
-        return None
-    post.img_small_path = small_img_path
-    db.commit()
-    db.refresh(post)
-    return post
+

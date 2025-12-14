@@ -33,9 +33,9 @@ def send_to_queue(filename: str):
     RABBITMQ_PASS = os.getenv("RABBITMQ_PASS")
     RABBITMQ_QUEUE = os.getenv("RABBITMQ_QUEUE")
 
-    print("#######################", RABBITMQ_USER, "###", RABBITMQ_PASS, "###",
-          RABBITMQ_QUEUE, "####", RABBITMQ_HOST, "####", RABBITMQ_PORT,
-          "#########################")
+#    print("#######################", RABBITMQ_USER, "###", RABBITMQ_PASS, "###",
+#          RABBITMQ_QUEUE, "####", RABBITMQ_HOST, "####", RABBITMQ_PORT,
+#          "#########################")
 
     if not RABBITMQ_USER or not RABBITMQ_PASS:
         raise RuntimeError("RabbitMQ credentials missing in backend!")
@@ -97,16 +97,6 @@ def posts_by_user_id(user_id: int):
         raise HTTPException(status_code=404, detail="User has no posts")
     return post
 
-
-# --- Helper: check if small image exists ---
-def small_image_path(filename: str) -> Optional[str]:
-    name, ext = os.path.splitext(filename)
-    small_filename = f"{name}_small{ext}"
-    if os.path.exists(os.path.join(UPLOAD_DIR, small_filename)):
-        return f"uploads/{small_filename}"
-    return None
-
-
 # --- Create Post ---
 @router.post("/", response_model=PostModel)
 async def create_post_api(
@@ -116,7 +106,7 @@ async def create_post_api(
         img: UploadFile = File(None)
 ):
     img_path = ""
-    img_small = None
+
     if img:
         os.makedirs(UPLOAD_DIR, exist_ok=True)
         file_location = os.path.join(UPLOAD_DIR, img.filename)
@@ -131,13 +121,8 @@ async def create_post_api(
         # send filename to RabbitMQ for async resizing
         send_to_queue(img.filename)
 
-        # try to detect small image if it already exists
-        img_small = small_image_path(img.filename)
-
     post = create_post(user_id, title, comment, img_path)
 
-    # attach small image path if available
-    setattr(post, "img_small_path", img_small)
 
     return post
 
@@ -151,7 +136,7 @@ async def update_post_api(
         img: Optional[UploadFile] = File(None)
 ):
     img_path = None
-    img_small = None
+
     if img:
         os.makedirs(UPLOAD_DIR, exist_ok=True)
         file_location = os.path.join(UPLOAD_DIR, img.filename)
@@ -165,15 +150,9 @@ async def update_post_api(
         # send filename to RabbitMQ for async resizing
         send_to_queue(img.filename)
 
-        # try to detect small image if already exists
-        img_small = small_image_path(img.filename)
-
     post = update_post(post_id=post_id, title=title, comment=comment, img_path=img_path)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
-
-    # attach small image path if available
-    setattr(post, "img_small_path", img_small)
 
     return post
 
