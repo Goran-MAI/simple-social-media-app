@@ -69,16 +69,17 @@ export default function PostForm({ selectedUser, selectedPost, setFormType, fetc
 
     const filename = newImage.name;
     const smallPath = getSmallImagePath(filename);
+const smallUrl = `http://localhost:8000/uploads/${smallPath}`;
 
     const checkSmallImage = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/${smallPath}`, { method: "HEAD" });
+        const response = await fetch(smallUrl, { method: "HEAD" });
         if (response.ok) {
-          setDisplayedImage(`http://localhost:8000/${smallPath}`);
-          if (pollerRef.current) {
-            clearInterval(pollerRef.current);
-            pollerRef.current = null;
-          }
+            setDisplayedImage(smallUrl);
+            if (pollerRef.current) {
+                clearInterval(pollerRef.current);
+                pollerRef.current = null;
+            }
         }
       } catch (err) {
         // small image not yet available, ignore

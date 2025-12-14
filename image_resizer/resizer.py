@@ -23,10 +23,10 @@ def connect_rabbit():
     if not all([RABBITMQ_DEFAULT_USER, RABBITMQ_DEFAULT_PASS, RABBITMQ_HOST, RABBITMQ_PORT, RABBITMQ_QUEUE]):
         raise ValueError("One or more RabbitMQ environment variables are missing!")
 
-    print("#######################", RABBITMQ_DEFAULT_USER, "####", RABBITMQ_DEFAULT_PASS, "####", RABBITMQ_QUEUE, "####",
-            RABBITMQ_HOST, "####", RABBITMQ_PORT,
-          "#########################")
-
+#    print("#######################", RABBITMQ_DEFAULT_USER, "####",
+#            RABBITMQ_DEFAULT_PASS, "####", RABBITMQ_QUEUE, "####",
+#            RABBITMQ_HOST, "####", RABBITMQ_PORT,
+#          "#########################")
 
     credentials = pika.PlainCredentials(RABBITMQ_DEFAULT_USER, RABBITMQ_DEFAULT_PASS)
     parameters = pika.ConnectionParameters(
@@ -57,14 +57,17 @@ def create_small_image(filename):
 
     try:
         with Image.open(original_path) as img:
-            # Berechne die neue Größe als 25% der Originalgröße
+            # save color mode
+            img = img.convert("RGB")
+
+            # Calculate new image-size to 25% of the original size
             width, height = img.size
-            new_width = int(width * 0.25)
-            new_height = int(height * 0.25)
+            new_width = max(1, int(width * 0.25))
+            new_height = max(1, int(height * 0.25))
             new_size = (new_width, new_height)
 
-            # Verkleinere das Bild
-            img_resized = img.resize(new_size, Image.ANTIALIAS)  # image scaling
+            # Scale image down.
+            img_resized = img.resize(new_size, Image.Resampling.LANCZOS)
 
             # Speichere das Bild
             img_resized.save(small_path)
