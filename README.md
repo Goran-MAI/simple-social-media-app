@@ -105,8 +105,5 @@ Backend API: http://localhost:8000/
 ```
 
 Info: 
-It may be necessary to adjust the permissions of the "uploads" folder for local image uploads.
-The current user must have full permissions on that folder.
+The project uses Python 3.11 consistently across CI, backend and worker containers.
 
-For Windows:
-icacls backend\uploads

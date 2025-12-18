@@ -39,7 +39,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.13
+          python-version: 3.11
 
       # Performs a clean installation of all dependencies
       - name: Install dependencies
@@ -48,8 +48,12 @@ jobs:
           pip install -r requirements.txt
 
       # Connect to postgreSQL-db and perform tests
-      - name: Connect to PostgreSQL
+      - name: Run backend tests (with DB)
         run: |
-          pytest -v --maxfail=3 --tb=short
+          pytest backend tests -v --maxfail=3 --tb=short
         env:
           DATABASE_URL: postgresql+psycopg2://ssma_user:ssma_pass@localhost:5432/ssma_db
+
+      - name: Run image resizer tests
+        run: |
+          pytest image_resizer -v
