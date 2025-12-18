@@ -5,7 +5,7 @@ on:
   push:
     branches: ["main"]
 #  workflow_run:
-#ä    workflows: [ "Run Python Tests (SSMA)" ]
+#    workflows: [ "Run Python Tests (SSMA)" ]
 #    types:
 #      - completed
 
