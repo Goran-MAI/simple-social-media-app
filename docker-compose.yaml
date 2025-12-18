@@ -15,6 +15,7 @@ services:
       - ssma_net
 
   backend:
+    # image: ghcr.io/${GHCR_USER}/ssma-backend:latest
     build:
       context: .
       dockerfile: backend/Dockerfile
@@ -43,12 +44,13 @@ services:
       - ssma_net
 
   frontend:
+    # image: ghcr.io/${GHCR_USER}/ssma-frontend:latest
     build:
       context: .
       dockerfile: frontend/Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL} # "http://ssma_backend:8000"
-    container_name: ssma_frontend
+    container_name: ssma-frontend
     ports:
       - "8080:80"
     depends_on:
@@ -72,12 +74,12 @@ services:
     networks:
       - ssma_net
 
-
   image_resizer:
+    # image: ghcr.io/${GHCR_USER}/ssma-image-resizer:latest
     build:
       context: .
       dockerfile: image_resizer/Dockerfile
-    container_name: ssma_image_resizer
+    container_name: ssma-image-resizer
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
