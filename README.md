@@ -8,36 +8,82 @@ SSMA is a Python project that demonstrates a simple full-stack setup with **SQLM
 
 ```text
 SSMA/
+    -p/
     .github/
         workflows/
+            ghcr-build.yml
             ubuntu-python-tests.yml
     backend/
+        __init__.py
         add_post.py
+        Dockerfile
         init_db.py
+        main.py
         models/
+            __init__.py
             post.py
             user.py
-            __init__.py
         routes/
+            __init__.py
             crud/
-                post_crud.py
-                user_crud.py
                 __init__.py
+                posts_crud.py
+                user_crud.py
             doc/
                 openapi_post_spec.yaml
                 openapi_user_spec.yaml
             endpoints/
+                __init__.py
                 post_routes.py
                 user_routes.py
-                __init__.py
-            __init__.py
-        __init__.py
+        test_post.py
+        test_user.py
+        uploads/
+            ...
+        utils/
+            rabbitmq_utils.py
+    docker-compose.yaml
     frontend/
         __init__.py
+        app/
+            .vite/
+                deps/
+        dist/
+            assets/
+                index-Bnyca6Ux.css
+                index-DgX_r6x0.js
+                SSMA_Logo-C3ZM6aVU.svg
+            vite.svg
+        Dockerfile
+        eslint.config.js
+        public/
+            vite.svg
+        src/
+            api/
+                post.js
+                user.js
+            App.css
+            App.jsx
+            assets/
+                react.svg
+                SSMA_Logo.svg
+            components/
+                PostForm.jsx
+                PostList.jsx
+                UserForm.jsx
+                UserList.jsx
+            index.css
+            main.jsx
+        vite.config.js
+    image_resizer/
+        Dockerfile
+        resizer.py
+        test_image_resizer.py
     pathlib_output.py
+    ssh_keys/
     tests/
-        test_db.py
         __init__.py
+        test_db.py
 ```
 
 ---
