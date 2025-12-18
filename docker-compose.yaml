@@ -74,7 +74,6 @@ services:
     networks:
       - ssma_net
 
-
   image_resizer:
     # image: ghcr.io/${GHCR_USER}/ssma-image-resizer:latest
     build:
