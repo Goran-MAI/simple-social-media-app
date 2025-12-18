@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 
 
 # --- Ensure upload directory exists ---
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+#os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # --- Connect to RabbitMQ ---
 def connect_rabbit():
