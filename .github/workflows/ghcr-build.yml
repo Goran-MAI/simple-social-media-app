@@ -4,10 +4,10 @@ name: Build & Push to GHCR
 on:
   push:
     branches: ["main"]
-  workflow_run:
-    workflows: [ "Run Python Tests (SSMA)" ]
-    types:
-      - completed
+#  workflow_run:
+#ä    workflows: [ "Run Python Tests (SSMA)" ]
+#    types:
+#      - completed
 
   workflow_dispatch:
 
@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   backend:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+#    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -47,7 +47,7 @@ jobs:
             ghcr.io/${{ steps.owner_lower.outputs.owner_lc }}/ssma-backend:${{ github.sha }}
 
   frontend:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+#    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     needs: backend
 
@@ -78,7 +78,7 @@ jobs:
             
   
   image-resizer:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+#    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     needs: frontend
 
