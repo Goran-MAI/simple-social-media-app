@@ -4,7 +4,9 @@ from PIL import Image
 import logging
 
 # --- Configuration ---
-UPLOAD_DIR = "/app/backend/uploads"
+#UPLOAD_DIR = "/app/backend/uploads"
+UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/app/backend/uploads")
+
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
@@ -47,6 +49,7 @@ def connect_rabbit():
 
 # --- Image resize function ---
 def create_small_image(filename, upload_dir=UPLOAD_DIR):
+    os.makedirs(upload_dir, exist_ok=True)
     original_path = os.path.join(upload_dir, filename)
     name, ext = os.path.splitext(filename)
     small_path = os.path.join(upload_dir, f"{name}_small{ext}")
