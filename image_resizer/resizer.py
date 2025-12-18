@@ -46,10 +46,10 @@ def connect_rabbit():
 
 
 # --- Image resize function ---
-def create_small_image(filename):
-    original_path = os.path.join(UPLOAD_DIR, filename)
+def create_small_image(filename, upload_dir=UPLOAD_DIR):
+    original_path = os.path.join(upload_dir, filename)
     name, ext = os.path.splitext(filename)
-    small_path = os.path.join(UPLOAD_DIR, f"{name}_small{ext}")
+    small_path = os.path.join(upload_dir, f"{name}_small{ext}")
 
     if not os.path.exists(original_path):
         logging.warning(f"Original image not found: {original_path}")
