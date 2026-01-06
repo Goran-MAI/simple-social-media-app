@@ -128,7 +128,15 @@ export default function PostForm({
               ? "Edit Post"
               : `Create Post for ${selectedUser.username}`}
           </h2>
-          <span className="post-form-emoji">{sentimentEmoji}</span>
+
+          <span className="post-form-emoji">
+              {sentimentEmoji}
+              <span className="tooltip-text">
+                {sentiment
+                  ? `Sentiment: ${sentiment}`
+                  : "Analyse läuft"}
+              </span>
+          </span>
         </div>
 
         {createdAt && (
