@@ -1,5 +1,6 @@
 # Use lightweight Python image
 FROM python:3.11-slim
+LABEL authors="Goran Janosevic (ai25m030)"
 
 WORKDIR /app/image_resizer
 
@@ -14,3 +15,5 @@ COPY image_resizer/ /app/image_resizer
 
 # Set entrypoint to run the resizer worker
 CMD ["python", "resizer.py"]
+
+

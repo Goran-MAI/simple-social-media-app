@@ -50,6 +50,7 @@ export default function PostForm({
   const [createdAt, setCreatedAt] = useState("");
   const [updatedAt, setUpdatedAt] = useState("");
   const [sentiment, setSentiment] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   /* -----------------------------
      Initialisierung
@@ -113,6 +114,31 @@ export default function PostForm({
     setFormType(null);
   };
 
+  /* -----------------------------
+     GPT2 Text Generator
+  ----------------------------- */
+  async function generateText(prompt) {
+    if (!prompt) return;
+
+    setIsGenerating(true);
+    try {
+      const response = await fetch("http://localhost:8001/generate_text", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt, max_length: 50 }),
+      });
+
+      const data = await response.json();
+      if (data.generated_text) {
+        setComment(data.generated_text);
+      }
+    } catch (err) {
+      console.error("Text generation failed", err);
+    } finally {
+      setIsGenerating(false);
+    }
+  }
+
   const sentimentClass = getSentimentClass(sentiment);
   const sentimentEmoji = getSentimentEmoji(sentiment);
 
@@ -130,21 +156,15 @@ export default function PostForm({
           </h2>
 
           <span className="post-form-emoji">
-              {sentimentEmoji}
-              <span className="tooltip-text">
-                {sentiment
-                  ? `Sentiment: ${sentiment}`
-                  : "Analyse läuft"}
-              </span>
+            {sentimentEmoji}
+            <span className="tooltip-text">
+              {sentiment ? `Sentiment: ${sentiment}` : "Analyse läuft"}
+            </span>
           </span>
         </div>
 
-        {createdAt && (
-          <p>Created at: {new Date(createdAt).toLocaleString()}</p>
-        )}
-        {updatedAt && (
-          <p>Updated at: {new Date(updatedAt).toLocaleString()}</p>
-        )}
+        {createdAt && <p>Created at: {new Date(createdAt).toLocaleString()}</p>}
+        {updatedAt && <p>Updated at: {new Date(updatedAt).toLocaleString()}</p>}
 
         {/* Sentiment-Text absichtlich ausgeblendet */}
         <p className="sentiment-text-hidden">
@@ -159,11 +179,24 @@ export default function PostForm({
             required
           />
 
-          <textarea
-            className="form-control mb-3"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-          />
+          {/* -----------------------------
+              Kommentar mit Generate-Button
+          ----------------------------- */}
+          <div className="textarea-wrapper mb-3">
+            <textarea
+              className="form-control"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
+            <button
+              type="button"
+              className="btn btn-sm btn-secondary generate-btn"
+              disabled={isGenerating}
+              onClick={() => generateText(title)}
+            >
+              {isGenerating ? "..." : "Generate"}
+            </button>
+          </div>
 
           <input
             type="file"

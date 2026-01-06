@@ -313,3 +313,16 @@ after SENTIMENT-integration
   visibility: visible;
   opacity: 1;
 }
+
+.textarea-wrapper {
+  position: relative;
+}
+
+.generate-btn {
+  position: absolute;
+  top: 4px;       /* etwas Abstand nach oben */
+  right: 4px;     /* Abstand rechts */
+  padding: 2px 6px;
+  font-size: 0.75rem; /* kleiner Button */
+  z-index: 10;
+}

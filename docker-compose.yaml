@@ -118,6 +118,16 @@ services:
     restart: unless-stopped
     networks:
       - ssma_net
+  text_generator:
+    build:
+      context: .
+      dockerfile: text_generator_service/Dockerfile
+    container_name: ssma-text-generator
+    ports:
+      - "8001:8001"
+    restart: unless-stopped
+    networks:
+      - ssma_net
 
 volumes:
   postgres_data:
