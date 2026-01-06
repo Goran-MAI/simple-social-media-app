@@ -1,4 +1,5 @@
 FROM python:3.11-slim
+LABEL authors="Goran Janosevic (ai25m030)"
 
 WORKDIR /app
 

@@ -44,9 +44,8 @@ def connect_rabbit():
 # --- HuggingFace Sentiment-Analysis ---
 classifier = pipeline(
     "sentiment-analysis",
-    model="oliverguhr/german-sentiment-bert"
+    model="cardiffnlp/twitter-roberta-base-sentiment" # cardiffnlp/twitter-roberta-base-sentiment     distilbert-base-uncased-finetuned-sst-2-english
 )
-
 
 # --- Callback-Funktion für Messages ---
 def callback(ch, method, properties, body):
@@ -64,16 +63,22 @@ def callback(ch, method, properties, body):
             logging.warning(f"Invalid POST event received: {event}")
             return
 
-        sentiment_result = classifier(text)[0]  # {'label': 'POSITIVE', 'score': 0.99}
-        label = sentiment_result["label"]
-        score = float(sentiment_result["score"])
+        label_map = {
+            "LABEL_0": "NEGATIVE",
+            "LABEL_1": "NEUTRAL",
+            "LABEL_2": "POSITIVE"
+        }
+
+        sentiment_result = classifier(text, truncation=True, max_length=100)[0] # {'label': 'POSITIVE', 'score': 0.99}
+        sentiment = label_map.get(sentiment_result["label"], "PENDING")
+        score = round(sentiment_result["score"], 3)  # optional für Confidence
 
         logging.info(f"Post {post_id} sentiment: {sentiment_result}")
 
         # --- update post-table with sentiment values ---
         success = update_post_sentiment(
             post_id=post_id,
-            sentiment=label,
+            sentiment=sentiment,
             sentiment_score=score
         )
 
