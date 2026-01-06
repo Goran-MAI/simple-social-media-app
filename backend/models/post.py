@@ -16,6 +16,9 @@ class Post(SQLModel, table=True):
     creation_date: datetime = Field(default_factory=lambda: datetime.now(tz=ZoneInfo("Europe/Vienna")))  # current Vienna time
     update_date: Optional[datetime] = None # update timestamp
     user_id: int = Field(foreign_key="user.id")  # relation to User
+    # The sentiment fields are populated asynchronously by a dedicated sentiment analysis microservice after post creation.
+    sentiment: Optional[str] = Field(default=None)
+    sentiment_score: Optional[float] = Field(default=None)
 
     # Many-to-one relationship: each post belongs to one user
     user: Optional["User"] = Relationship(back_populates="posts")

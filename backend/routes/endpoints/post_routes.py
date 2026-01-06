@@ -4,6 +4,7 @@ import shutil
 import os
 import pika
 import logging
+from backend.utils.rabbitmq_utils import send_message
 from backend.routes.crud.posts_crud import (
     get_all_posts,
     get_posts_by_user_id,
@@ -23,48 +24,6 @@ def running_in_docker():
 
 # Set upload directory depending on environment
 UPLOAD_DIR = "/app/backend/uploads" if running_in_docker() else "backend/uploads"
-
-
-# --- Send message to RabbitMQ ---
-def send_to_queue(filename: str):
-    RABBITMQ_HOST = os.getenv("RABBITMQ_HOST")
-    RABBITMQ_PORT = int(os.getenv("RABBITMQ_PORT"))
-    RABBITMQ_USER = os.getenv("RABBITMQ_USER")
-    RABBITMQ_PASS = os.getenv("RABBITMQ_PASS")
-    RABBITMQ_QUEUE = os.getenv("RABBITMQ_QUEUE")
-
-#    print("#######################", RABBITMQ_USER, "###", RABBITMQ_PASS, "###",
-#          RABBITMQ_QUEUE, "####", RABBITMQ_HOST, "####", RABBITMQ_PORT,
-#          "#########################")
-
-    if not RABBITMQ_USER or not RABBITMQ_PASS:
-        raise RuntimeError("RabbitMQ credentials missing in backend!")
-
-    credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
-
-    try:
-        connection = pika.BlockingConnection(
-            pika.ConnectionParameters(
-                host=RABBITMQ_HOST,
-                port=RABBITMQ_PORT,
-                credentials=credentials
-            )
-        )
-        channel = connection.channel()
-        channel.queue_declare(queue=RABBITMQ_QUEUE, durable=True)
-        channel.basic_publish(
-            exchange='',
-            routing_key=RABBITMQ_QUEUE,
-            body=filename,
-            properties=pika.BasicProperties(delivery_mode=2)
-        )
-        logging.info(f"Sent '{filename}' to RabbitMQ queue '{RABBITMQ_QUEUE}'")
-    except Exception as e:
-        logging.error(f"Failed to send '{filename}' to RabbitMQ: {e}")
-    finally:
-        if 'connection' in locals() and connection.is_open:
-            connection.close()
-
 
 
 # --- CRUD endpoints ---
@@ -118,11 +77,25 @@ async def create_post_api(
         # relative path for frontend
         img_path = f"uploads/{img.filename}"
 
-        # send filename to RabbitMQ for async resizing
-        send_to_queue(img.filename)
-
+    # --- Create post in DB ---
     post = create_post(user_id, title, comment, img_path)
 
+    # --- Send RabbitMQ event AFTER post is updated ---
+    # For Image-Resizer
+    if img:
+        send_message("image_resize", {
+            "event": "POST",
+            "filename": img.filename,
+            "post_id": post.id
+        })
+
+    # For Sentiment
+    if comment:
+        send_message("sentiment", {
+            "event": "POST",
+            "post_id": post.id,
+            "text": comment
+        })
 
     return post
 
@@ -147,12 +120,27 @@ async def update_post_api(
 
         img_path = f"uploads/{img.filename}"
 
-        # send filename to RabbitMQ for async resizing
-        send_to_queue(img.filename)
-
+    # --- Update post in DB ---
     post = update_post(post_id=post_id, title=title, comment=comment, img_path=img_path)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
+
+    # --- Send RabbitMQ event AFTER post is updated ---
+    # For Image-Resizer
+    if img:
+        send_message("image_resize", {
+            "event": "POST",
+            "filename": img.filename,
+            "post_id": post.id
+        })
+
+    # For Sentiment
+    if comment:
+        send_message("sentiment", {
+            "event": "POST",
+            "post_id": post.id,
+            "text": comment
+        })
 
     return post
 

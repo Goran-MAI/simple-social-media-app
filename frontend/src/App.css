@@ -206,3 +206,88 @@ button {
   margin-bottom: 10px;
 }
 
+/*
+
+after SENTIMENT-integration
+
+*/
+
+.post-form-card {
+  position: relative;
+  border-radius: 10px;
+  background: #fff;
+  padding: 16px;
+}
+
+.post-form-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  padding: 3px;
+  background: linear-gradient(135deg, #ccc, #eee);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* sentiment-specific */
+.sentiment-positive::before {
+  background: linear-gradient(135deg, #2ecc71, #a8ffcf);
+}
+
+.sentiment-negative::before {
+  background: linear-gradient(135deg, #e74c3c, #ffb3b3);
+}
+
+.sentiment-neutral::before {
+  background: linear-gradient(135deg, #95a5a6, #dcdcdc);
+}
+
+.sentiment-pending::before {
+  background: linear-gradient(135deg, #6c7ae0, #b3bcff);
+}
+
+
+/* Emoji rechts oben */
+.post-form-emoji {
+  font-size: 1.5rem;
+  float: right;
+}
+
+/* Bild mittig */
+.image-preview-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.post-image-preview {
+  max-width: 100%;
+  border-radius: 6px;
+}
+
+/* Sentiment-Text AUSBLENDEN */
+.sentiment-text-hidden {
+  display: none;
+}
+
+
+/* Save Button */
+.btn-save {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-save:hover {
+  background-color: #0056b3;
+}
