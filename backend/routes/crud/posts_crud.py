@@ -5,7 +5,6 @@ from typing import List, Optional
 from datetime import datetime
 from zoneinfo import ZoneInfo  # Python 3.9+
 from sqlmodel import SQLModel, Field, Relationship
-# from backend.utils.rabbitmq_utils import send_to_queue
 import os
 
 # get all posts
@@ -53,11 +52,6 @@ def create_post(user_id: int, title: str, comment: str, img_path: str) -> Post:
         session.commit()
         session.refresh(post)
 
-    # Send image name to queue if it exists
-    #if img_path:
-    #    filename = os.path.basename(img_path)
-    #    send_to_queue(filename)
-
     return post
 
 # update post
@@ -77,14 +71,9 @@ def update_post(post_id: int, title: Optional[str] = None, comment: Optional[str
             post.comment = comment
         if img_path is not None:
             post.img_path = img_path
-            # "Hardkodiert" den Small-Pfad
+            # "hardcoded" small-path
             name, ext = os.path.splitext(img_path)
             post.img_small_path = f"{name}_small{ext}"
-
-            # Send image name to queue if it exists
-            #if img_path:
-            #    filename = os.path.basename(img_path)
-            #    send_to_queue(filename)
 
         # set update_date
         post.update_date = datetime.now(tz=ZoneInfo("Europe/Vienna"))
@@ -107,4 +96,20 @@ def delete_post(post_id: int) -> bool:
             return True
     return False
 
+def update_post_sentiment(
+    post_id: int,
+    sentiment: str,
+    sentiment_score: float
+) -> bool:
+    with Session(engine) as session:
+        post = session.get(Post, post_id)
+        if not post:
+            return False
 
+        post.sentiment = sentiment
+        post.sentiment_score = sentiment_score
+        post.update_date = datetime.now(tz=ZoneInfo("Europe/Vienna"))
+
+        session.add(post)
+        session.commit()
+        return True

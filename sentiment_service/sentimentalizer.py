@@ -1,17 +1,11 @@
 import os
-import pika
-from PIL import Image
-import logging
 import json
-
-# --- Configuration ---
-UPLOAD_DIR = "/app/backend/uploads"
+import logging
+import pika
+from transformers import pipeline
+from backend.routes.crud.posts_crud import update_post_sentiment
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-
-
-# --- Ensure upload directory exists ---
-os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # --- Connect to RabbitMQ ---
 def connect_rabbit():
@@ -46,76 +40,58 @@ def connect_rabbit():
     return connection, channel
 
 
-# --- Image resize function ---
-def create_small_image(filename):
-    original_path = os.path.join(UPLOAD_DIR, filename)
-    name, ext = os.path.splitext(filename)
-    small_path = os.path.join(UPLOAD_DIR, f"{name}_small{ext}")
 
-    if not os.path.exists(original_path):
-        logging.warning(f"Original image not found: {original_path}")
-        return
+# --- HuggingFace Sentiment-Analysis ---
+classifier = pipeline(
+    "sentiment-analysis",
+    model="oliverguhr/german-sentiment-bert"
+)
 
 
-    try:
-        with Image.open(original_path) as img:
-            img = img.convert("RGB")
-
-            max_size = (250, 10000)  # Breite = 250px, Höhe unbeschränkt
-            img.thumbnail(max_size, Image.Resampling.LANCZOS)
-
-            img.save(small_path)
-
-            logging.info(f"Created small image: {small_path}")
-    except Exception as e:
-        logging.error(f"Failed to resize {filename}: {e}")
-
-
-
-
-# --- Callback for RabbitMQ messages ---
+# --- Callback-Funktion für Messages ---
 def callback(ch, method, properties, body):
     try:
-        # Parse JSON message
         event = json.loads(body)
-
         event_type = event.get("event")
-        filename = event.get("filename")
-        post_id = event.get("post_id")  # <- hier hinzufügen
+        post_id = event.get("post_id")
+        text = event.get("text", "")
 
-        # Optional: Loggen, wenn Post-ID vorhanden
-        if post_id:
-            logging.info(f"Associated with post {post_id}")
-
-        # Validate event type
         if event_type != "POST":
             logging.info(f"Ignoring event type: {event_type}")
-            ch.basic_ack(delivery_tag=method.delivery_tag)
             return
 
-        # Validate payload
-        if not filename:
-            logging.warning(f"Invalid POST message: {event}")
-            ch.basic_ack(delivery_tag=method.delivery_tag)
+        if not post_id or not text:
+            logging.warning(f"Invalid POST event received: {event}")
             return
 
-        logging.info(f"Received POST event for file: {filename}")
+        sentiment_result = classifier(text)[0]  # {'label': 'POSITIVE', 'score': 0.99}
+        label = sentiment_result["label"]
+        score = float(sentiment_result["score"])
 
-        # Process image
-        create_small_image(filename)
+        logging.info(f"Post {post_id} sentiment: {sentiment_result}")
 
-    except json.JSONDecodeError:
-        logging.error("Failed to decode JSON message")
+        # --- update post-table with sentiment values ---
+        success = update_post_sentiment(
+            post_id=post_id,
+            sentiment=label,
+            sentiment_score=score
+        )
+
+        if not success:
+            logging.warning(f"Post {post_id} not found in DB")
+
     except Exception as e:
         logging.error(f"Error processing message: {e}")
+
     finally:
-        # Always acknowledge the message to avoid blocking the queue
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
+
+# --- Message Consumption starten ---
 # --- Main loop ---
 def main():
     # Get RabbitMQ queue name from environment
-    rabbitmq_queue = os.getenv("RABBITMQ_QUEUE")  # Default to "image_resize" if not set
+    rabbitmq_queue = os.getenv("RABBITMQ_QUEUE")
 
     if not rabbitmq_queue:
         logging.error("RABBITMQ_QUEUE is not set. Exiting.")
@@ -129,4 +105,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

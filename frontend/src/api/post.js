@@ -27,6 +27,13 @@ export async function getPostsByUserId(userId) {
   return res.json();
 }
 
+export async function fetchPostById(id) {
+  const res = await fetch(`${API_URL}/posts/${id}`);
+  if (!res.ok) throw new Error("Failed to fetch post");
+  return res.json();
+}
+
+
 // --- CREATE ---
 export async function createPost({ user_id, title, comment, img }) {
   const formData = new FormData();
