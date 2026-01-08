@@ -9,7 +9,7 @@ greenlet==3.2.4
 
 # NLP / Sentiment
 transformers==4.57.3
-torch==2.9.1+cpu
+torch==2.9.1
 
 # Typing / Config
 pydantic==2.12.4

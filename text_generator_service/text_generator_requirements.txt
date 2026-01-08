@@ -1,0 +1,13 @@
+# NLP / Text generation
+transformers==4.57.3
+torch==2.9.1
+
+# FastAPI + CORS
+fastapi==0.121.2
+uvicorn[standard]==0.38.0
+
+# Typing / Config
+pydantic==2.12.4
+typing_extensions==4.15.0
+annotated-types==0.7.0
+tzdata==2025.2
